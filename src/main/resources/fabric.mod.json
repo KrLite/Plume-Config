@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "plumeconfig",
+  "version": "${version}",
+
+  "name": "Plume Config",
+  "description": "A Lightweight Configuration Library for Minecraft Mods.",
+  "authors": [
+    "KrLite"
+  ],
+  "contributors": [
+    "Yjn024"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "MIT",
+  "icon": "assets/plumeconfig/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.krlite.plumeconfig.PlumeConfigMod"
+    ]
+  },
+  "mixins": [
+    "plumeconfig.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.18.2",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
