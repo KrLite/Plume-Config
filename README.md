@@ -2,4 +2,4 @@
 
 ## License
 
-This template is available under the MIT license.
+This mod is under the MIT license.
