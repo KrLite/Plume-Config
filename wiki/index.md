@@ -1,4 +1,4 @@
-### [< Go Back](https://github.com/KrLite/Plume-Config)
+### [< Go Back](https://github.com/KrLite/wiki)
 
 # Index
 
