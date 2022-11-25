@@ -26,7 +26,7 @@ public class OptionLong extends Option<Long> {
 	@Override
 	public Long parse(String source) {
 		try {
-			return value = Long.parseLong(source);
+			return source == null ? defaultValue : (value = Long.parseLong(source));
 		} catch (NumberFormatException e) {
 			PlumeConfigMod.LOGGER.trace(e.getMessage());
 			return value = defaultValue;

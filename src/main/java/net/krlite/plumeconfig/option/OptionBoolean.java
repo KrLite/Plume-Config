@@ -1,9 +1,6 @@
 package net.krlite.plumeconfig.option;
 
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 public class OptionBoolean extends Option<Boolean> {
 	public OptionBoolean(String key, boolean defaultValue) {
@@ -24,6 +21,6 @@ public class OptionBoolean extends Option<Boolean> {
 
 	@Override
 	public Boolean parse(String source) {
-		return value = source.toLowerCase().matches("true|yes|on|1") || (!source.toLowerCase().matches("false|no|off|0") && defaultValue);
+		return source == null ? defaultValue : (value = source.toLowerCase().matches("true|yes|on|1") || (!source.toLowerCase().matches("false|no|off|0") && defaultValue));
 	}
 }

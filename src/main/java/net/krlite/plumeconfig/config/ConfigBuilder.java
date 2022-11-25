@@ -1,5 +1,6 @@
 package net.krlite.plumeconfig.config;
 
+import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.option.core.Option;
 import org.jetbrains.annotations.NotNull;
 

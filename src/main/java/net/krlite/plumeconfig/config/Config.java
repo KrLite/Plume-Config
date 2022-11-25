@@ -7,21 +7,20 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 
-public record PlumeConfig(Request request) {
+public record Config(Request request) {
 	public void prepare(@NotNull ConfigBuilder configBuilder) {
 		if (!request.formattedConfig.isEmpty()) {
 			request.clear();
 		}
 
 		if (configBuilder.categories.containsKey(ConfigBuilder.ROOT_CATEGORY)) {
-			request.appendCategory(configBuilder.categories.get(ConfigBuilder.ROOT_CATEGORY));
+			request.appendCategory(configBuilder.categories.get(ConfigBuilder.ROOT_CATEGORY), true);
 		}
 
 		for (Option<?> option : configBuilder.options.values()) {
 			request.appendOption(option);
-
 			if (configBuilder.categories.containsKey(option.getKey())) {
-				request.appendCategory(configBuilder.categories.get(option.getKey()));
+				request.appendCategory(configBuilder.categories.get(option.getKey()), false);
 			}
 		}
 	}
@@ -29,6 +28,7 @@ public record PlumeConfig(Request request) {
 	private void create() {
 		try {
 			request.create();
+			write();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -37,7 +37,6 @@ public record PlumeConfig(Request request) {
 	public HashMap<String, String> read() {
 		try {
 			request.load();
-
 			return request.config;
 		} catch (IOException e) {
 			create();

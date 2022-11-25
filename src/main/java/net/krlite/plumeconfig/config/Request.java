@@ -47,12 +47,12 @@ public class Request {
 		Files.createFile(file.toPath());
 	}
 
-	public void appendCategory(String category) {
-		formattedConfig += Formatter.formatCategory(category) + Formatter.END;
+	public void appendCategory(String category, boolean isRoot) {
+		formattedConfig += (isRoot ? "" : Formatter.END) + Formatter.formatCategory(category) + Formatter.END_LINE;
 	}
 
 	public <T extends Option<?>> void appendOption(@NotNull T option) {
-		formattedConfig += Formatter.END + option.format() + Formatter.END;
+		formattedConfig += option.format();
 	}
 
 	private void parseConfigEntry(@NotNull String entry) {

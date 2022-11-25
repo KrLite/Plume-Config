@@ -1,11 +1,9 @@
 package net.krlite.plumeconfig;
 
 import net.fabricmc.api.ModInitializer;
-import net.krlite.plumeconfig.test.TestConfig;
+import net.krlite.plumeconfig.example.ExampleConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.*;
 
 public class PlumeConfigMod implements ModInitializer {
 	public static final String MOD_ID = "plumeconfig";
@@ -13,11 +11,22 @@ public class PlumeConfigMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Initializing config...");
-		TestConfig testConfig = new TestConfig();
-		PlumeConfigMod.LOGGER.error(String.valueOf(testConfig.testColor.getValue().getRGB()));
-		LOGGER.info("Try loading config...");
-		testConfig.load();
+		/*
+		 *
+		 * This is an example of how to load and write the configs when you need to.
+		 *
+		 * LOGGER.info("Initializing config...");
+		 * ExampleConfig exampleConfig = new ExampleConfig("test", "testConfig"); // Initialize the config class by new an instance of it
+		 *
+		 * LOGGER.info("Try loading config..."); // You can load the config as soon as you initialized the config, if the file or some of the values are missing, they will be written in default values
+		 * exampleConfig.load(); // Remember to use pre-defined load() method instead of read() to load the config
+		 *
+		 *
+		 *
+		 * LOGGER.info("Try writing config..."); // You can write the config whenever you want, it will override the old values in the config file
+		 * exampleConfig.write() // Remember to use pre-defined write() method instead of save() to load the config
+		 *
+		 */
 	}
 
 	// TODO: Request manipulates the config file (write, load, etc.)

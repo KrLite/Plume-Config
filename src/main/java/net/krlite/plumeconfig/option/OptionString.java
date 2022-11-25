@@ -1,10 +1,6 @@
 package net.krlite.plumeconfig.option;
 
-import net.krlite.plumeconfig.Formatter;
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 public class OptionString extends Option<String> {
 	public OptionString(String key, String defaultValue) {
@@ -17,6 +13,6 @@ public class OptionString extends Option<String> {
 
 	@Override
 	public String parse(String source) {
-		return value = source;
+		return value = source == null ? defaultValue : source;
 	}
 }

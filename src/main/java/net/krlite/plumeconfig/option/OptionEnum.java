@@ -29,7 +29,7 @@ public class OptionEnum extends Option<Enum<?>> {
 	@Override
 	public Enum<?> parse(String source) {
 		try {
-			return value = Enum.valueOf(defaultValue.getDeclaringClass(), source);
+			return source == null ? defaultValue : (value = Enum.valueOf(defaultValue.getDeclaringClass(), source));
 		} catch (IllegalArgumentException e) {
 			PlumeConfigMod.LOGGER.error(
 					"Invalid value for enum option: " + key + " = " + source

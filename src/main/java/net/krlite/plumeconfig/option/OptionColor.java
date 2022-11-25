@@ -29,7 +29,7 @@ public class OptionColor extends Option<Color> {
 	@Override
 	public Color parse(String sourceColor) {
 		try {
-			return value = new Color((int) Long.parseLong(sourceColor.toLowerCase(), 16));
+			return sourceColor == null ? defaultValue : (value = new Color((int) Long.parseLong(sourceColor.toLowerCase(), 16)));
 		} catch (IllegalArgumentException e) {
 			PlumeConfigMod.LOGGER.error(
 					"Color parameter outside of expected range: " + key + " = " + sourceColor

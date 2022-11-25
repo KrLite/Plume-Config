@@ -45,7 +45,7 @@ public class OptionDouble extends Option<Double> {
 	@Override
 	public Double parse(String source) {
 		try {
-			return value = Double.parseDouble(source);
+			return source == null ? defaultValue : (value = Double.parseDouble(source));
 		} catch (NumberFormatException e) {
 			PlumeConfigMod.LOGGER.trace(e.getMessage());
 			return value = defaultValue;
