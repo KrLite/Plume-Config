@@ -16,7 +16,7 @@ public class PlumeConfigMod implements ModInitializer {
 		 * This is an example of how to load and write the configs when you need to.
 		 *
 		 * LOGGER.info("Initializing config...");
-		 * ExampleConfig exampleConfig = new ExampleConfig("test", "testConfig"); // Initialize the config class by new an instance of it
+		 * ExampleConfig exampleConfig = new ExampleConfig("example", "exampleConfig"); // Initialize the config class by new an instance of it
 		 *
 		 * LOGGER.info("Try loading config..."); // You can load the config as soon as you initialized the config, if the file or some of the values are missing, they will be written in default values
 		 * exampleConfig.load(); // Remember to use pre-defined load() method instead of read() to load the config
