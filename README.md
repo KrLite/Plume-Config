@@ -33,8 +33,14 @@ option.example.boolean=false
 
 # | Category Numbers |
 
+option.example.int=0
+# Default: 0
+
 option.example.double=0.0
 # Default: 0.0
+
+
+# | Category String Values |
 
 option.example.color=FFFFFFFF
 # Default: FFFFFFFF
@@ -44,12 +50,6 @@ option.example.color=FFFFFFFF
 option.example.string=abc
 # Default: abc
 # Hey, this is an example comment!
-
-option.example.int=0
-# Default: 0
-
-
-# | Category String Values |
 ```
 
 > **Note:**
