@@ -24,26 +24,30 @@ If you meet the requirements, feel free to build the library yourself.
 ```properties
 # | Category Booleans |
 
-option.test.boolean=false
+# The name of the example boolean
+option.example.boolean=false
 # Default: false
 
 
 # | Category Numbers |
 
-option.test.color=FF123456
-# Default: FFFFFFFF
+option.example.double=0.0
+# Default: 0.0
 
-option.test.int=0
+option.example.color=FFFFFFFF
+# Default: FFFFFFFF
+# Expected color value: AARRGGBB
+
+# My example string
+option.example.string=abc
+# Default: abc
+# Hey, this is an example comment!
+
+option.example.int=0
 # Default: 0
 
 
 # | Category String Values |
-
-option.test.string=abc
-# Default: abc
-
-option.test.double=0.0
-# Default: 0.0
 ```
 
 > **Note:**

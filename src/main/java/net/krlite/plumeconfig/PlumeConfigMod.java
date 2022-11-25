@@ -24,7 +24,7 @@ public class PlumeConfigMod implements ModInitializer {
 		 *
 		 *
 		 * LOGGER.info("Try writing config..."); // You can write the config whenever you want, it will override the old values in the config file
-		 * exampleConfig.write() // Remember to use pre-defined write() method instead of save() to load the config
+		 * exampleConfig.write(); // Remember to use pre-defined write() method instead of save() to load the config
 		 *
 		 */
 	}
