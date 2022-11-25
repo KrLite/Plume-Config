@@ -2,7 +2,7 @@
 
 ![banner](artwork/banner-big.png)
 
-### `Fabric` `Minecraft 1.18.2` `...` `0.0.1 α`
+### `Fabric` `Minecraft 1.18.2` `...` `0.0.2 α`
 
 ## `📖 Introduction`
 
