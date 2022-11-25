@@ -1,5 +1,5 @@
 # Index
 
-### [**Creating a Config Instance >**](Config-Instance.md)
+### [**Creating a Config Instance >**](config-instance.md)
 
-### [**Saving Options >**](Options.md)
+### [**Saving Options >**](options.md)
