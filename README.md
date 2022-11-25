@@ -75,4 +75,4 @@ Folder names and file names are defined by the mod developer, and there could be
 
 ## `📜 License`
 
-This mod is available under the `MIT license.`
+This mod is available under the [`MIT license.`](LICENSE)
