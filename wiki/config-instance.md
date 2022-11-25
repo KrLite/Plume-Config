@@ -1,4 +1,4 @@
-### [< Index](Index.md)
+### [< Index](index.md)
 
 # Creating a Config Instance
 
