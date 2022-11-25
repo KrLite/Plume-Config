@@ -56,7 +56,7 @@ option.example.int=0
 >
 > The `=` character is used to separate the key from the value. The key must be unique to identify the value. The value can be a boolean, a number, a string or a hex-string stored integer color (custom value types will be allowed in future).
 
-> **Please refer to our wiki page for example codes.**
+> **Please refer to our [wiki pages](wiki/index.md) for example codes.**
 
 ### `📁 Structure`
 
