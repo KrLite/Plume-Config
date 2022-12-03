@@ -2,13 +2,22 @@
 
 ![banner](artwork/banner-big.png)
 
-<img alt="Mod Loaders" src="https://img.shields.io/static/v1?label=Available%20On&message=Fabric%20/%20Quilt&labelColor=000000&color=42243e&style=flat" />
-
-<img alt="Minecraft Versions" src="https://img.shields.io/static/v1?label=Minecraft&message=1.18.X%20/%201.19.X&labelColor=000000&color=34374b&style=flat" />
-
-<a href="https://modrinth.com/mod/plumeconfig">
-    <img alt="Latest Version" src="https://img.shields.io/static/v1?label=Modrinth&message=1.0.0&labelColor=000000&color=384224&style=flat" />
-</a>
+<div>
+    <img
+        alt="Mod Loaders"
+        src="https://img.shields.io/static/v1?label=Available%20On&message=Fabric%20/%20Quilt&labelColor=000000&color=42243e&style=flat"
+     />
+    <img
+        alt="Minecraft Versions"
+        src="https://img.shields.io/static/v1?label=Minecraft&message=1.18.X%20/%201.19.X&labelColor=000000&color=34374b&style=flat"
+     />
+    <a href="https://modrinth.com/mod/plumeconfig">
+        <img
+            alt="Latest Version"
+            src="https://img.shields.io/static/v1?label=Modrinth&message=1.0.0&labelColor=000000&color=384224&style=flat"
+         />
+    </a>
+</div>
 
 ## `📖 Introduction`
 
