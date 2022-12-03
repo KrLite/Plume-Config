@@ -1,11 +1,8 @@
 package net.krlite.plumeconfig.option;
 
-import net.krlite.plumeconfig.Formatter;
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -29,7 +26,7 @@ public class OptionColor extends Option<Color> {
 	@Override
 	public Color parse(String sourceColor) {
 		try {
-			return sourceColor == null ? defaultValue : (value = new Color((int) Long.parseLong(sourceColor.toLowerCase(), 16)));
+			return value = (sourceColor == null ? defaultValue : new Color((int) Long.parseLong(sourceColor.toLowerCase(), 16)));
 		} catch (IllegalArgumentException e) {
 			PlumeConfigMod.LOGGER.error(
 					"Color parameter outside of expected range: " + key + " = " + sourceColor
@@ -41,12 +38,17 @@ public class OptionColor extends Option<Color> {
 	}
 
 	@Override
-	public String format() {
-		return Formatter.formatOption(
-				name, key,
-				Integer.toHexString(value.getRGB()).toUpperCase(),
-				Integer.toHexString(defaultValue.getRGB()).toUpperCase(),
-				comment
-		);
+	public Color parse(JsonObject sourceColor) {
+		return sourceColor.get(key) == null ? value = defaultValue : parse(sourceColor.get(key).getAsString());
+	}
+
+	@Override
+	public String getValueRaw() {
+		return Integer.toHexString(value.getRGB()).toUpperCase();
+	}
+
+	@Override
+	public String getDefaultValueRaw() {
+		return Integer.toHexString(defaultValue.getRGB()).toUpperCase();
 	}
 }

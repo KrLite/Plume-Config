@@ -1,8 +1,6 @@
 package net.krlite.plumeconfig.option.core;
 
-import net.krlite.plumeconfig.Formatter;
-import net.krlite.plumeconfig.PlumeConfigMod;
-import net.minecraft.text.Text;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +13,6 @@ public abstract class Option<T> {
 	@Nullable
 	protected final String comment;
 
-	// Will be public in the future
 	protected Option(@Nullable String name, @NotNull String key, @NotNull T defaultValue, @Nullable String comment) {
 		this.name = name;
 		this.key = key;
@@ -41,7 +38,13 @@ public abstract class Option<T> {
 
 	public abstract T parse(String source);
 
-	public String format() {
-		return Formatter.formatOption(name, key, value, defaultValue, comment);
+	public abstract T parse(JsonObject source);
+
+	public String getValueRaw() {
+		return value.toString();
+	}
+
+	public String getDefaultValueRaw() {
+		return defaultValue.toString();
 	}
 }

@@ -22,11 +22,11 @@
   "entrypoints": {
     "main": [
       "net.krlite.plumeconfig.PlumeConfigMod"
+    ],
+    "plumeconfig": [
+      "net.krlite.plumeconfig.Example"
     ]
   },
-  "mixins": [
-    "plumeconfig.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.14.6",

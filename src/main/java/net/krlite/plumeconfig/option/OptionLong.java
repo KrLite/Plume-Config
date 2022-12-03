@@ -1,10 +1,8 @@
 package net.krlite.plumeconfig.option;
 
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 public class OptionLong extends Option<Long> {
 	public OptionLong(String key, long defaultValue) {
@@ -26,7 +24,17 @@ public class OptionLong extends Option<Long> {
 	@Override
 	public Long parse(String source) {
 		try {
-			return source == null ? defaultValue : (value = Long.parseLong(source));
+			return value = (source == null ? defaultValue : Long.parseLong(source));
+		} catch (NumberFormatException e) {
+			PlumeConfigMod.LOGGER.trace(e.getMessage());
+			return value = defaultValue;
+		}
+	}
+
+	@Override
+	public Long parse(JsonObject source) {
+		try {
+			return value = (source.get(key) == null ? defaultValue : source.get(key).getAsLong());
 		} catch (NumberFormatException e) {
 			PlumeConfigMod.LOGGER.trace(e.getMessage());
 			return value = defaultValue;

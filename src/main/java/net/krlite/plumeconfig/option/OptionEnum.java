@@ -1,11 +1,8 @@
 package net.krlite.plumeconfig.option;
 
-import net.krlite.plumeconfig.Formatter;
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -29,7 +26,7 @@ public class OptionEnum extends Option<Enum<?>> {
 	@Override
 	public Enum<?> parse(String source) {
 		try {
-			return source == null ? defaultValue : (value = Enum.valueOf(defaultValue.getDeclaringClass(), source));
+			return value = (source == null ? defaultValue : Enum.valueOf(defaultValue.getDeclaringClass(), source));
 		} catch (IllegalArgumentException e) {
 			PlumeConfigMod.LOGGER.error(
 					"Invalid value for enum option: " + key + " = " + source
@@ -43,7 +40,17 @@ public class OptionEnum extends Option<Enum<?>> {
 	}
 
 	@Override
-	public String format() {
-		return Formatter.formatOption(name, key, value.name(), defaultValue.name(), comment);
+	public Enum<?> parse(JsonObject source) {
+		return source.get(key) == null ? value = defaultValue : parse(source.get(key).getAsString());
+	}
+
+	@Override
+	public String getValueRaw() {
+		return value.name();
+	}
+
+	@Override
+	public String getDefaultValueRaw() {
+		return defaultValue.name();
 	}
 }

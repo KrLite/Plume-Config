@@ -1,5 +1,6 @@
 package net.krlite.plumeconfig.option;
 
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.option.core.Option;
 
 public class OptionString extends Option<String> {
@@ -13,6 +14,11 @@ public class OptionString extends Option<String> {
 
 	@Override
 	public String parse(String source) {
-		return value = source == null ? defaultValue : source;
+		return value = (source == null ? defaultValue : source);
+	}
+
+	@Override
+	public String parse(JsonObject source) {
+		return value = (source.get(key) == null ? defaultValue : source.get(key).getAsString());
 	}
 }

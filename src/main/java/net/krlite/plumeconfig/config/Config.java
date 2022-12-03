@@ -1,60 +1,42 @@
 package net.krlite.plumeconfig.config;
 
-import net.krlite.plumeconfig.PlumeConfigMod;
+import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
+import net.krlite.plumeconfig.json.ConfigSerializer;
 import net.krlite.plumeconfig.option.core.Option;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.HashMap;
 
-public record Config(Request request) {
-	public void prepare(@NotNull ConfigBuilder configBuilder) {
-		if (!request.formattedConfig.isEmpty()) {
-			request.clear();
-		}
+public abstract class Config extends ConfigSerializer {
+	/** The config file. */
+	File file;
 
-		if (configBuilder.categories.containsKey(ConfigBuilder.ROOT_CATEGORY)) {
-			request.appendCategory(configBuilder.categories.get(ConfigBuilder.ROOT_CATEGORY), true);
-		}
-
-		for (Option<?> option : configBuilder.options.values()) {
-			request.appendOption(option);
-			if (configBuilder.categories.containsKey(option.getKey())) {
-				request.appendCategory(configBuilder.categories.get(option.getKey()), false);
-			}
-		}
-	}
-
-	private void create() {
-		try {
-			request.create();
-			write();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public HashMap<String, String> read() {
-		try {
-			request.load();
-			return request.config;
-		} catch (IOException e) {
-			create();
-
-			return read();
-		}
-	}
-
-	public void write() {
-		try {
-			request.write();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	/**
+	 * Creates a new config by name.
+	 * @param fileName	The name of the config file.
+	 */
+	public Config(String fileName) {
+		file = FabricLoader.getInstance().getConfigDir().resolve(fileName + ".json5").toFile();
 	}
 
 	/**
-	 * @return The ConfigSerializer for this config.
+	 * Creates a new config by path and name.
+	 * @param pathName	The parent path of the config file.
+	 * @param fileName	The name of the config file.
 	 */
-	//public abstract ConfigSerializer<? extends PlumeConfig> getSerializer();
+	public Config(String pathName, String fileName) {
+		file = FabricLoader.getInstance().getConfigDir().resolve(pathName).resolve(fileName + ".json5").toFile();
+	}
+
+	/**
+	 * Reads the config from file.
+	 */
+	public abstract JsonObject read();
+
+	/**
+	 * Writes the config into file.
+	 * @param options	A list of options needed to be written.
+	 */
+	public abstract void write(Option<?>... options);
 }

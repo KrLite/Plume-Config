@@ -1,11 +1,9 @@
 package net.krlite.plumeconfig.option;
 
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.option.core.Option;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 public class OptionDouble extends Option<Double> {
 	public OptionDouble(String key, double defaultValue) {
@@ -45,7 +43,17 @@ public class OptionDouble extends Option<Double> {
 	@Override
 	public Double parse(String source) {
 		try {
-			return source == null ? defaultValue : (value = Double.parseDouble(source));
+			return value = (source == null ? defaultValue : Double.parseDouble(source));
+		} catch (NumberFormatException e) {
+			PlumeConfigMod.LOGGER.trace(e.getMessage());
+			return value = defaultValue;
+		}
+	}
+
+	@Override
+	public Double parse(JsonObject source) {
+		try {
+			return value = (source.get(key) == null ? defaultValue : source.get(key).getAsDouble());
 		} catch (NumberFormatException e) {
 			PlumeConfigMod.LOGGER.trace(e.getMessage());
 			return value = defaultValue;

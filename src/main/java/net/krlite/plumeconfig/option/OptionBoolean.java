@@ -1,5 +1,6 @@
 package net.krlite.plumeconfig.option;
 
+import com.google.gson.JsonObject;
 import net.krlite.plumeconfig.option.core.Option;
 
 public class OptionBoolean extends Option<Boolean> {
@@ -21,6 +22,11 @@ public class OptionBoolean extends Option<Boolean> {
 
 	@Override
 	public Boolean parse(String source) {
-		return source == null ? defaultValue : (value = source.toLowerCase().matches("true|yes|on|1") || (!source.toLowerCase().matches("false|no|off|0") && defaultValue));
+		return value = (source == null ? defaultValue : source.toLowerCase().matches("true|yes|on|1") || (!source.toLowerCase().matches("false|no|off|0") && defaultValue));
+	}
+
+	@Override
+	public Boolean parse(JsonObject source) {
+		return value = (source.get(key) == null ? defaultValue : source.get(key).getAsBoolean());
 	}
 }
