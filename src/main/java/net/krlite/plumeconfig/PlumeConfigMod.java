@@ -1,6 +1,5 @@
 package net.krlite.plumeconfig;
 
-import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.krlite.plumeconfig.config.api.PlumeConfigApi;
