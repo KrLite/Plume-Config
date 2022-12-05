@@ -1,23 +1,10 @@
-# `< Plume 🪶 Config >`
+### <p align=right>[Modrinth →](https://modrinth.com/mod/plumeconfig)</p>
+
+# Plume 🪶 Config
+
+**Available on `Fabric` `Quilt` for Minecraft `~1.18` `~1.19`**
 
 ![banner](artwork/banner-big.png)
-
-<div>
-    <img
-        alt="Mod Loaders"
-        src="https://img.shields.io/static/v1?label=Available%20On&message=Fabric%20/%20Quilt&labelColor=000000&color=42243e&style=flat"
-     />
-    <img
-        alt="Minecraft Versions"
-        src="https://img.shields.io/static/v1?label=Minecraft&message=1.18.X%20/%201.19.X&labelColor=000000&color=34374b&style=flat"
-     />
-    <a href="https://modrinth.com/mod/plumeconfig">
-        <img
-            alt="Latest Version"
-            src="https://img.shields.io/static/v1?label=Modrinth&message=1.0.0&labelColor=000000&color=384224&style=flat"
-         />
-    </a>
-</div>
 
 ## `📖 Introduction`
 
@@ -51,13 +38,13 @@ repositories {
 }
 ```
 
-**Replace `xxx` with the latest [`version id`](https://modrinth.com/mod/plumeconfig/versions) of Plume Config.**
-
 ```groovy
 dependencies {
     modApi include("maven.modrinth:plumeconfig:xxx")
 }
 ```
+
+**Remember to replace `xxx` above with the latest [`version id`](https://modrinth.com/mod/plumeconfig/versions) of Plume Config.**
 
 If you meet the requirements, feel free to build the library yourself.
 
