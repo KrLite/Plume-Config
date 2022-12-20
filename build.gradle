@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.0.9'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -10,14 +10,6 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-sourceSets {
-	main {
-		java {
-			exclude 'net/krlite/plumeconfig/example/**'
-		}
-	}
-}
-
 repositories {
 }
 
@@ -27,6 +19,12 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	/*
+	<tomlj>: TOML parser
+	https://github.com/tomlj/tomlj
+	 */
+	implementation 'org.tomlj:tomlj:1.1.0'
 }
 
 processResources {

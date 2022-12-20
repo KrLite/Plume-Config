@@ -4,30 +4,39 @@
   "version": "${version}",
 
   "name": "Plume Config",
-  "description": "A Lightweight Configuration Library for Minecraft Mods.",
+  "description": "A TOML-Based Lightweight Configuration Library for Minecraft Mods.",
   "authors": [
-    "KrLite"
-  ],
-  "contributors": [
-    "Yjn024"
+    "Me!"
   ],
   "contact": {
+    "homepage": "https://fabricmc.net/",
     "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
 
-  "license": "MIT",
+  "license": "CC0-1.0",
   "icon": "assets/plumeconfig/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
       "net.krlite.plumeconfig.PlumeConfigMod"
+    ],
+    "plumeconfig-function": [
+      "net.krlite.plumeconfig.base.function.LongToInteger",
+      "net.krlite.plumeconfig.base.function.LongToShort",
+      "net.krlite.plumeconfig.base.function.DoubleToFloat",
+      "net.krlite.plumeconfig.base.function.LongToColor",
+      "net.krlite.plumeconfig.base.function.StringToCharacter"
+    ],
+    "plumeconfig-savingfunction": [
+      "net.krlite.plumeconfig.base.savingfunction.ColorToString",
+      "net.krlite.plumeconfig.base.savingfunction.StringToString"
     ]
   },
 
   "depends": {
     "fabricloader": ">=0.14.10",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "~1.19",
     "java": ">=17"
   },
