@@ -2,7 +2,7 @@
 
 # Plume Config [`based on TOML`](https://toml.io)
 
-Plume Config is a lightweight configuration library made for Minecraft Mods, using [Tom's Obvious Minimal Language `toml`](https://toml.io).
+Plume Config is a lightweight configuration library made for Minecraft Mods, using [Tom's Obvious Minimal Language `TOML`](https://toml.io).
 
 ## Implementation
 
