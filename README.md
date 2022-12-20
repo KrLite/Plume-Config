@@ -81,7 +81,7 @@ public String s = "string";
 
 private static @Option int integer = 1; // ...after the modifier
 // An option field can be either public or private, but not protected.
-// An option field can also be final, but it's not recommended.
+// An option field can also be final, but it's not recommended and the value won't change.
 ```
 
 ```toml
