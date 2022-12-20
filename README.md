@@ -43,6 +43,7 @@ Then, rebuild the gradle and you are ready to go.
 [`example.toml`](src/main/java/example/config/example.toml)
 
 ```toml
+# 1
 # comment2
 s = "string" # String | A String Comment
 integer = 1 # Int
@@ -62,7 +63,7 @@ First of all, declare a `ConfigFile` instance:
 
 ```java
 public class MyModInitializer {
-    public static final ConfigFile CONFIG = new ConfigFile("my_modid", "my_config.toml"); // There are other constructors available, see javadoc for more.
+    public static final ConfigFile CONFIG = new ConfigFile("my_modid", "my_config.toml"); // There are other constructors available, see javadoc for more
 }
 ```
 
@@ -81,8 +82,8 @@ In the class, when you want to declare a field as an option, just use the annota
 public String s = "string";
 
 private static @Option int integer = 1; // ...after the modifier
-// An option field can be either public or private, but not protected.
-// An option field can also be final, but it's not recommended and the value won't change.
+// An option field can be either public or private, but not protected
+// An option field can also be final, but it's not recommended and the value won't change
 ```
 
 ```toml
