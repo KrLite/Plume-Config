@@ -31,7 +31,8 @@ repositories {
 ```groovy
 dependencies {
     // Please use modApi instead of something else
-    modApi include("maven.modrinth:plume-config:3.0.0") // Versions lower than 3.0.0 are outdated, and versions that are not latest are not recommended
+    // Versions lower than v3.0.0 are outdated, and versions that are not latest are not recommended
+    modApi include("maven.modrinth:plume-config:v3.0.0")
 }
 ```
 
