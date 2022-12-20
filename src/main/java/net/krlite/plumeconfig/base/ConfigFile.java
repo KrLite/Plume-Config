@@ -54,12 +54,23 @@ public class ConfigFile {
 		);
 	}
 
+	/**
+	 * Load the config file into an instance, and save it right away.
+	 * @param clazz	The class of the config instance.
+	 * @return		The loaded config instance.
+	 * @param <T>	The parameter of the instance class.
+	 */
 	public <T> T loadAndSave(Class<T> clazz) {
 		T instance = load(clazz);
 		save(instance);
 		return instance;
 	}
 
+	/**
+	 * Saves the config instance into the file.
+	 * @param instance	The config instance to be saved.
+	 * @param <T>		The parameter of the instance class.
+	 */
 	public <T> void save(T instance) {
 		Writer writer = new Writer(file);
 		try {
@@ -69,8 +80,15 @@ public class ConfigFile {
 		}
 		Field[] fields = instance.getClass().getDeclaredFields();
 		Arrays.stream(fields).forEach(this::iteratorFieldSave);
+		writer.format();
 	}
 
+	/**
+	 * Loads the config file into an instance.
+	 * @param clazz	The class of the config instance.
+	 * @return		The loaded config instance.
+	 * @param <T>	The parameter of the instance class.
+	 */
 	@Nullable
 	public <T> T load(Class<T> clazz) {
 		try {
@@ -91,6 +109,10 @@ public class ConfigFile {
 		return null;
 	}
 
+	/**
+	 * Iterates the field's attributes and saves it into the file.
+	 * @param field	The field to be iterated.
+	 */
 	private void iteratorFieldSave(Field field) {
 		if (field.isAnnotationPresent(Comment.class)) {
 			field.setAccessible(true);
@@ -120,6 +142,11 @@ public class ConfigFile {
 		}
 	}
 
+	/**
+	 * Iterates the field's attributes and loads it from the file.
+	 * @param field	The field to be iterated.
+	 * @param toml	The TomlParseResult from which the file to be loaded.
+	 */
 	private void iteratorFieldLoad(Field field, TomlParseResult toml) {
 		Option option = field.getAnnotation(Option.class);
 		String key = !option.key().isEmpty() ? option.key() : field.getName();
@@ -139,6 +166,7 @@ public class ConfigFile {
 	}
 
 	/**
+	 * Writes a line into the file with the given objects.
 	 * @param contents	<strong>COMMENT: </strong>{comment}, <strong>OPTION: </strong>{key, value, name, comment}, anything else will be ignored.
 	 */
 	private void writeLine(Object... contents) {
@@ -148,16 +176,21 @@ public class ConfigFile {
 		Writer writer = new Writer(file);
 		contents = Arrays.stream(contents).filter(Objects::nonNull).filter(value -> !value.toString().isEmpty()).toArray(); // Filter null and empty values
 		if (contents.length <= 1) { // It's a comment
-			writer.write("# " + contents[0].toString(), true);
+			Arrays.stream(contents[0].toString().split("\n"))
+					.forEach(line -> writer.writeAndEndLine("# " + line.replaceAll("\n", "")));
 		} else { // It's an option (contents are at least key+value)
 			writer.write(contents[0].toString() + " = " + contents[1].toString()); // key = value
 			if (contents.length >= 4) { // It has both a name and a comment
-				writer.write(" # " + contents[2].toString() + " | " + contents[3].toString(), true);
+				writer.writeAndEndLine(" # " + mapLineBreak(contents[2].toString()) + " | " + mapLineBreak(contents[3].toString()));
 			} else if (contents.length == 3) { // It has either a name or a comment
-				writer.write(" # " + contents[2].toString(), true);
+				writer.writeAndEndLine(" # " + mapLineBreak(contents[2].toString()));
 			} else { // None of the above
 				writer.nextLine();
 			}
 		}
+	}
+
+	private String mapLineBreak(String content) {
+		return content.replaceAll("\n" , "");
 	}
 }

@@ -1,6 +1,5 @@
 package net.krlite.plumeconfig;
 
-import example.Example;
 import net.fabricmc.api.ModInitializer;
 import net.krlite.plumeconfig.base.ConfigFile;
 import org.slf4j.Logger;
@@ -14,5 +13,8 @@ public class PlumeConfigMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ConfigFile config = new ConfigFile("plumeconfig");
+		Example example = config.load(Example.class);
+		config.save(example);
 	}
 }

@@ -1,13 +1,12 @@
 package net.krlite.plumeconfig.base.function;
 
 import net.krlite.plumeconfig.annotation.Convertor;
-
-import java.util.function.Function;
+import net.krlite.plumeconfig.api.IFunction;
 
 @Convertor(from = String.class, to = {Character.class, char.class})
-public class StringToCharacter implements Function<String, Character> {
+public class StringToCharacter implements IFunction {
 	@Override
-	public Character apply(String s) {
-		return s.charAt(0);
+	public Object apply(Object object) {
+		return ((String) object).charAt(0);
 	}
 }

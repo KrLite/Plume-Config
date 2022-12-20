@@ -1,11 +1,12 @@
 package net.krlite.plumeconfig.base.function;
 
 import net.krlite.plumeconfig.annotation.Convertor;
+import net.krlite.plumeconfig.api.IFunction;
 
 @Convertor(from = Double.class, to = {Float.class, float.class})
-public class DoubleToFloat implements java.util.function.Function<Double, Float> {
+public class DoubleToFloat implements IFunction {
 	@Override
-	public Float apply(Double aDouble) {
-		return aDouble.floatValue();
+	public Object apply(Object object) {
+		return ((Double) object).floatValue();
 	}
 }

@@ -31,7 +31,7 @@ repositories {
 ```groovy
 dependencies {
     // Please use modApi instead of something else
-    modApi include("maven.modrinth:plume-config:1.0.0")
+    modApi include("maven.modrinth:plume-config:3.0.0") // Versions lower than 3.0.0 are outdated, and versions that are not latest are not recommended
 }
 ```
 
@@ -69,7 +69,7 @@ Then, design your own config class:
 
 ```java
 public class MyConfig {
-	// Keep reading...
+    // Keep reading...
 }
 ```
 
