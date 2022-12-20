@@ -137,6 +137,20 @@ private static int i = 12345;
 > The `@Comment` annotation can only be used on fields, and it will not be operated as an option.
 > If a field is annotated with both `@Option` and `@Comment`, the `@Option` annotation will be ignored, which means the field will be seen as a comment.
 
+In special cases, multi-line string contents will be in multi-line format:
+
+```java
+@Option
+public String s = "Multi-\nline\\\nString!"
+```
+
+```toml
+s = """
+Multi
+line\
+String!"""
+```
+
 That's how it works. Now write some configs into your class:
 
 ```java
@@ -212,7 +226,7 @@ public class MyModInitializer implements ModInitializer {
 }
 ```
 
-Pretty cool, right? Plume Config now only supports one-line comments and strings, and doesn't support all toml features, like dotted keys and categories. But we are always working to make everything better, and just watch our project if you are interested in the progress!
+Pretty cool, right? Plume Config doesn't support all toml features now, like dotted keys and categories. But we are always working to make everything better, and just watch our project if you are interested in the progress!
 
 ## License
 
