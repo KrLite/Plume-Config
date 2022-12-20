@@ -1,0 +1,8 @@
+# 1
+# comment2
+s = "string" # String | A String Comment
+integer = 1 # Int
+# comment3
+d = 1.0
+color = 0xff000000
+bool = false
