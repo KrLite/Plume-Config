@@ -31,8 +31,8 @@ repositories {
 ```groovy
 dependencies {
     // Please use modApi instead of something else
-    // Versions lower than v3.0.0 are outdated, and versions that are not latest are not recommended
-    modApi include("maven.modrinth:plumeconfig:v3.1.0")
+    // Versions lower than v3.2.0 are outdated, and versions that are not latest are not recommended
+    modApi include("maven.modrinth:plumeconfig:v3.2.0")
     
     // Plume Config is using TOMLJ, so you need to implement it as well
     implementation "org.tomlj:tomlj:1.1.0"
@@ -167,7 +167,7 @@ One of the main features of TOML is categories(work as dotted keys), and Plume C
 @Category("abc")
 public @Comment String catComment="Categorized Comment";
 
-public String uncat="Uncategorized";
+public @Option String uncat="Uncategorized";
 
 @Category("abc")
 public @Option String cat="Categorized";
@@ -247,7 +247,7 @@ public class MyModInitializer implements ModInitializer {
     public void onInitialize() {
         CONFIG_INSTANCE = CONFIG.load(MyConfig.class);
 		
-		// They are good now.
+		// They are good now
         System.out.println(CONFIG_INSTANCE.playerName);
         System.out.println(CONFIG_INSTANCE.d);
         System.out.println(CONFIG_INSTANCE.color);
