@@ -5,6 +5,7 @@ import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.annotation.Category;
 import net.krlite.plumeconfig.annotation.Comment;
 import net.krlite.plumeconfig.annotation.Option;
+import net.krlite.plumeconfig.api.EnumLocalizable;
 import net.krlite.plumeconfig.exception.ClassException;
 import net.krlite.plumeconfig.exception.FieldException;
 import net.krlite.plumeconfig.exception.FileException;
@@ -110,7 +111,7 @@ public class ConfigFile {
 								 .filter(field -> field.isAnnotationPresent(Option.class) || field.isAnnotationPresent(Comment.class)).toArray(Field[]::new);
 
 		// Save Uncategorized fields
-		Arrays.stream(fields).filter(field -> !field.isAnnotationPresent(Category.class)).forEach(this::iteratorFieldSave);
+		Arrays.stream(fields).filter(field -> !field.isAnnotationPresent(Category.class)).forEach(field -> iteratorFieldSave(instance, field));
 
 		// Categories
 		Category[] categories = Arrays.stream(fields)
@@ -122,7 +123,7 @@ public class ConfigFile {
 		Arrays.stream(categories).forEach(
 				category -> Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Category.class))
 						.filter(field -> field.getAnnotation(Category.class).equals(category))
-						.forEach(this::iteratorFieldSave)
+						.forEach(field -> iteratorFieldSave(instance, field))
 		);
 
 		// Format the config file
@@ -150,7 +151,8 @@ public class ConfigFile {
 			Field[] fields = instance.getClass().getDeclaredFields();
 
 			// Load all fields annotated by @Option into the instance
-			Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Option.class)).forEach(field -> iteratorFieldLoad(field, toml));
+			Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Option.class))
+					.forEach(field -> iteratorFieldLoad(instance, field, toml));
 			return instance;
 		} catch (IllegalAccessException illegalAccessException) {
 			ClassException.traceClassAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, clazz);
@@ -164,7 +166,7 @@ public class ConfigFile {
 	 * Iterates the field's attributes and saves it into the file.
 	 * @param field	The field to be iterated.
 	 */
-	private void iteratorFieldSave(Field field) {
+	private void iteratorFieldSave(Object instance, Field field) {
 		// Writes the category if exist
 		if (field.isAnnotationPresent(Category.class)) writeCategory(field.getAnnotation(Category.class));
 		field.setAccessible(true);
@@ -172,9 +174,9 @@ public class ConfigFile {
 		// Writes the field as a comment, if annotated by @Comment
 		if (field.isAnnotationPresent(Comment.class)) {
 			try {
-				writeLine(field.get(field.getDeclaringClass().getDeclaredConstructor().newInstance()));
-			} catch (Exception exception) {
-				FieldException.traceFieldAccessingException(PlumeConfigMod.LOGGER, exception, file, field);
+				writeLine(field.get(instance));
+			} catch (IllegalAccessException illegalAccessException) {
+				FieldException.traceFieldAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, file, field);
 			}
 			return;
 		}
@@ -184,15 +186,29 @@ public class ConfigFile {
 			Option option = field.getAnnotation(Option.class);
 			String key = !option.key().isEmpty() ? option.key() : field.getName();
 			try {
-				writeLine(
-						key, FieldFunction.savingFunctions(modid,
-								field.get(field.getDeclaringClass().getDeclaredConstructor().newInstance())),
-						option.name(), option.comment()
-				);
+				if (field.getType().isEnum()) {
+					if (EnumLocalizable.class.isAssignableFrom(field.getType())) {
+						writeLine(
+								key, FieldFunction.savingFunctions(modid,
+										((EnumLocalizable) field.get(instance)).getLocalizedName()),
+								option.name(), option.comment()
+						);
+					} else {
+						writeLine(
+								key, FieldFunction.savingFunctions(modid,
+										((Enum<?>) field.get(instance)).name()),
+								option.name(), option.comment()
+						);
+					}
+				} else {
+					writeLine(
+							key, FieldFunction.savingFunctions(modid,
+									field.get(instance)),
+							option.name(), option.comment()
+					);
+				}
 			} catch (IllegalAccessException illegalAccessException) {
 				FieldException.traceFieldAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, file, field);
-			} catch (InvocationTargetException | InstantiationException | NoSuchMethodException exception) {
-				ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, field.getDeclaringClass());
 			}
 		}
 	}
@@ -202,7 +218,7 @@ public class ConfigFile {
 	 * @param field	The field to be iterated.
 	 * @param toml	The TomlParseResult from which the file to be loaded.
 	 */
-	private void iteratorFieldLoad(Field field, TomlParseResult toml) {
+	private void iteratorFieldLoad(Object instance, Field field, TomlParseResult toml) {
 		Option option = field.getAnnotation(Option.class);
 		field.setAccessible(true);
 
@@ -210,14 +226,30 @@ public class ConfigFile {
 		String key = !option.key().isEmpty() ? option.key() : field.getName();
 		if (field.isAnnotationPresent(Category.class)) key = new MappedString(field.getAnnotation(Category.class).value()).mapLineBreaks().mapSpaces().get() + "." + key; // Line breaks are needed to be replaced by dots, but spaces are ok.
 
-		if (toml.contains(key)) {
+		if (toml.contains(key) && toml.get(key) != null) {
 			try {
-				field.set(field.getDeclaringClass().getDeclaredConstructor().newInstance(),
-						FieldFunction.functions(modid, field.getType(), toml.get(key)));
+				if (field.getType().isEnum()) {
+					String value = toml.getString(key);
+					if (EnumLocalizable.class.isAssignableFrom(field.getType())) {
+						field.set(
+								instance,
+								Arrays.stream((EnumLocalizable[]) field.get(instance).getClass().getEnumConstants())
+										.filter(enumLocalizable -> enumLocalizable.getLocalizedName().equals(value))
+										.findFirst().orElseThrow()
+						);
+					} else {
+						field.set(
+								instance,
+								Arrays.stream((Enum<?>[]) field.get(instance).getClass().getEnumConstants())
+										.filter(enumConstant -> enumConstant.name().equals(value))
+										.findFirst().orElseThrow()
+						);
+					}
+				} else {
+					field.set(instance, FieldFunction.functions(modid, field.getType(), toml.get(key)));
+				}
 			} catch (IllegalAccessException illegalAccessException) {
 				FieldException.traceFieldInitializingException(PlumeConfigMod.LOGGER, illegalAccessException, file, field);
-			} catch (InvocationTargetException | InstantiationException | NoSuchMethodException exception) {
-				ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, field.getDeclaringClass());
 			}
 		} else {
 			// The config file doesn't contain the key, why?

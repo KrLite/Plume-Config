@@ -6,7 +6,7 @@
   "name": "Plume Config",
   "description": "A TOML-Based Lightweight Configuration Library for Minecraft Mods.",
   "authors": [
-    "Me!"
+    "KrLite"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -35,9 +35,9 @@
   },
 
   "depends": {
-    "fabricloader": ">=0.14.10",
+    "fabricloader": ">=0.14.11",
     "fabric-api": "*",
-    "minecraft": "~1.19",
+    "minecraft": ">=1.19",
     "java": ">=17"
   },
   "suggests": {

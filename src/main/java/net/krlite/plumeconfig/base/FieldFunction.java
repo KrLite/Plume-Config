@@ -4,16 +4,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.annotation.Convertor;
-import net.krlite.plumeconfig.api.ISavingFunction;
-import net.krlite.plumeconfig.api.IFunction;
+import net.krlite.plumeconfig.api.SavingFunction;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class FieldFunction {
 	public static Object functions(String id, Class<?> type, Object o) {
 		// Build-in function
-		Optional<IFunction> function = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, IFunction.class).stream()
+		Optional<Function> function = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, Function.class).stream()
 									   .filter(container -> container.getProvider().getMetadata().getId().equals(PlumeConfigMod.MOD_ID))
 									   .map(EntrypointContainer::getEntrypoint)
 									   .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
@@ -21,7 +21,7 @@ public class FieldFunction {
 									   .findFirst();
 
 		// Custom function
-		Optional<IFunction> customFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, IFunction.class).stream()
+		Optional<Function> customFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, Function.class).stream()
 													 .filter(container -> container.getProvider().getMetadata().getId().equals(id))
 													 .map(EntrypointContainer::getEntrypoint)
 													 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
@@ -39,7 +39,7 @@ public class FieldFunction {
 
 	public static Object savingFunctions(String id, Object o) {
 		// Build-in function
-		Optional<ISavingFunction> savingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, ISavingFunction.class).stream()
+		Optional<SavingFunction> savingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, SavingFunction.class).stream()
 											 .filter(container -> container.getProvider().getMetadata().getId().equals(PlumeConfigMod.MOD_ID))
 											 .map(EntrypointContainer::getEntrypoint)
 											 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
@@ -47,7 +47,7 @@ public class FieldFunction {
 											 .findFirst();
 
 		// Custom function
-		Optional<ISavingFunction> customSavingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, ISavingFunction.class).stream()
+		Optional<SavingFunction> customSavingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, SavingFunction.class).stream()
 																 .filter(container -> container.getProvider().getMetadata().getId().equals(id))
 																 .map(EntrypointContainer::getEntrypoint)
 																 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))

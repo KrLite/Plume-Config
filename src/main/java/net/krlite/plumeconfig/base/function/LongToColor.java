@@ -1,14 +1,14 @@
 package net.krlite.plumeconfig.base.function;
 
 import net.krlite.plumeconfig.annotation.Convertor;
-import net.krlite.plumeconfig.api.IFunction;
 
 import java.awt.*;
+import java.util.function.Function;
 
 @Convertor(from = Long.class, to = Color.class)
-public class LongToColor implements IFunction {
+public class LongToColor implements Function<Long, Color> {
 	@Override
-	public Object apply(Object object) {
-		return new Color(((Long) object).intValue(), true);
+	public Color apply(Long value) {
+		return new Color(value.intValue(), true);
 	}
 }

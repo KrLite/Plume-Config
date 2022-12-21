@@ -1,12 +1,13 @@
 package net.krlite.plumeconfig.base.function;
 
 import net.krlite.plumeconfig.annotation.Convertor;
-import net.krlite.plumeconfig.api.IFunction;
+
+import java.util.function.Function;
 
 @Convertor(from = Long.class, to = {Integer.class, int.class})
-public class LongToInteger implements IFunction {
+public class LongToInteger implements Function<Long, Integer> {
 	@Override
-	public Object apply(Object object) {
-		return ((Long) object).intValue();
+	public Integer apply(Long value) {
+		return value.intValue();
 	}
 }
