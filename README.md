@@ -167,7 +167,7 @@ One of the main features of TOML is categories(work as dotted keys), and Plume C
 @Category("abc")
 public @Comment String catComment="Categorized Comment";
 
-public String uncat="Uncategorized";
+public @Option String uncat="Uncategorized";
 
 @Category("abc")
 public @Option String cat="Categorized";
