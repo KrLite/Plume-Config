@@ -244,16 +244,16 @@ public class MyModInitializer implements ModInitializer {
     public void onInitialize() {
         CONFIG_INSTANCE = CONFIG.load(MyConfig.class);
 		
-		// They are good now
+	// They are good now
         System.out.println(CONFIG_INSTANCE.playerName);
         System.out.println(CONFIG_INSTANCE.d);
         System.out.println(CONFIG_INSTANCE.color);
         System.out.println(CONFIG_INSTANCE.bool);
-		
-		CONFIG_INSTANCE.playerName = "Lambda Sigma 2";
-		CONFIG_INSTANCE.color = Color.RED;
-		
-		// Don't forget to save your config after changes!
+
+	CONFIG_INSTANCE.playerName = "Lambda Sigma 2";
+	CONFIG_INSTANCE.color = Color.RED;
+
+	// Don't forget to save your config after changes!
         CONFIG.save(CONFIG_INSTANCE); // Now don't insert MyConfig.class, instead, use the config instance.
     }
 }
