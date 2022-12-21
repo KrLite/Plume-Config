@@ -247,7 +247,7 @@ public class MyModInitializer implements ModInitializer {
     public void onInitialize() {
         CONFIG_INSTANCE = CONFIG.load(MyConfig.class);
 		
-		// They are good now.
+		// They are good now
         System.out.println(CONFIG_INSTANCE.playerName);
         System.out.println(CONFIG_INSTANCE.d);
         System.out.println(CONFIG_INSTANCE.color);
