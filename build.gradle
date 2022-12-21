@@ -24,7 +24,7 @@ dependencies {
 	<tomlj>: TOML parser
 	https://github.com/tomlj/tomlj
 	 */
-	implementation 'org.tomlj:tomlj:1.1.0'
+	implementation "org.tomlj:tomlj:1.1.0"
 }
 
 sourceSets {

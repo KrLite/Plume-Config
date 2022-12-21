@@ -33,6 +33,9 @@ dependencies {
     // Please use modApi instead of something else
     // Versions lower than v3.0.0 are outdated, and versions that are not latest are not recommended
     modApi include("maven.modrinth:plumeconfig:v3.0.0")
+    
+    // Plume Config is using TOMLJ, so you need to implement it as well
+    implementation "org.tomlj:tomlj:1.1.0"
 }
 ```
 
