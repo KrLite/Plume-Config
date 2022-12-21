@@ -32,7 +32,7 @@ repositories {
 dependencies {
     // Please use modApi instead of something else
     // Versions lower than v3.0.0 are outdated, and versions that are not latest are not recommended
-    modApi include("maven.modrinth:plumeconfig:v3.0.0")
+    modApi include("maven.modrinth:plumeconfig:v3.1.0")
     
     // Plume Config is using TOMLJ, so you need to implement it as well
     implementation "org.tomlj:tomlj:1.1.0"
@@ -48,12 +48,17 @@ Then, rebuild the gradle and you are ready to go.
 ```toml
 # 1
 # comment2
-s = "string" # String | A String Comment
+# commented line
 integer = 1 # Int
+bool = false
+
+[abc]
+s = "string" # String | A String Comment
 # comment3
 d = 1.0
+
+[def]
 color = 0xff000000
-bool = false
 ```
 
 ## Usage
@@ -156,6 +161,28 @@ line\
 String!"""
 ```
 
+One of the main features of TOML is categories(work as dotted keys), and Plume Config also supports it by using the `@Category` annotation:
+
+```java
+@Category("abc")
+public @Comment String catComment="Categorized Comment";
+
+public String uncat="Uncategorized";
+
+@Category("abc")
+public @Option String cat="Categorized";
+```
+
+```toml
+uncat = "Uncategorized"
+
+[abc]
+# Categorized Comment
+cat = "Categorized"
+```
+
+> The order of the fields is not important, Plume Config will sort them automatically by categories.
+
 That's how it works. Now write some configs into your class:
 
 ```java
@@ -168,12 +195,14 @@ public class MyConfig {
 	@Option(comment = "Change this number smaller to make your mouse faster")
 	public double d = 1.0;
 
-	@Comment public String comment = "=-= Be careful changing the options below =-=";
+	@Category("misc")
+	@Comment public String comment = "=-Misc-=";
 
 	@Option(comment = "The only identity in the map")
 	public int color = Color.BLACK;
-	
-	@Option(name = "Streaming switch", comment = "Toggle the streaming mode")
+
+	@Category("misc")
+	@Option(name = "Streaming switch", comment = "Toggle streaming mode")
 	public boolean bool = false;
 }
 ```
@@ -198,9 +227,11 @@ Your config file(`run/config/my_modid/my_config.toml`) will look like this:
 ```toml
 player_name = "Lambda Sigma" # Player Name | Your name in the game
 d = 1.0 # Change this number smaller to make your mouse faster
-# =-= Be careful changing the options below =-=
 color = 0xff000000 # The only identity in the map
-bool = false # Streaming switch | Toggle the streaming mode
+
+[misc]
+# =-Misc-=
+bool = false # Streaming switch | Toggle streaming mode
 ```
 
 In your code, make sure everytime you load your mod, you read your config first.
@@ -231,7 +262,7 @@ public class MyModInitializer implements ModInitializer {
 }
 ```
 
-Pretty cool, right? Plume Config doesn't support all toml features now, like dotted keys and categories. But we are always working to make everything better, and just watch our project if you are interested in the progress!
+Pretty cool, right? Plume Config doesn't support all toml features now, but we are always making everything better. Just watch our project if you are interested in the progress!
 
 ## License
 

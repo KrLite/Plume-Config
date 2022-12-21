@@ -1,39 +1,35 @@
 package example;
 
+import net.krlite.plumeconfig.annotation.Category;
 import net.krlite.plumeconfig.annotation.Comment;
 import net.krlite.plumeconfig.annotation.Option;
 
 import java.awt.*;
 
 public class Example {
-	// This is an integer comment
-	public @Comment int comment = 1;
+	public @Comment int comment = 1; // Integer comment
 
-	// This is a string comment
-	public @Comment String comment2 = "comment2";
+	public @Comment String comment2 = "comment2\ncommented line"; // Multi-line comment
 
-	// This is a string option
-	@Option(name = "String", comment = "A String Comment")
-	public String s = "string";
+	@Option(name = "String", comment = "A String\n Comment")
+	@Category("abc")
+	public String s = "string"; // A String option named "String" with a comment(line breaks will be ignored)
 
-	// This is an integer option
-	@Option(key = "integer", name = "Int")
+	@Option(key = "integer", name = "Int") // An Integer option named "Int" with a specified key "integer"
 	public int i = 1;
 
-	// This is a string comment
-	private final @Comment String comment3 = "comment3";
+	@Category("abc")
+	private final @Comment String comment3 = "comment3"; // A comment in the category "abc"
 
-	// This is a double option, but final, so cannot be changed
-	private static final @Option double d = 1.0;
+	@Category("abc")
+	private static final @Option double d = 1.0; // A double option in the category "abc"
 
-	// This is a regular field to not being read and written
-	public static int silent = 1;
+	public static int silent = 1; // No annotations, will be ignored
 
-	public static int silent2 = 1;
+	private static final int silent2 = 1;
 
-	// This is a color option
-	public static @Option Color color = Color.BLACK;
+	@Category("def")
+	public static @Option Color color = Color.BLACK; // A Color option in the category "def"
 
-	// This is a boolean option
-	public static @Option boolean bool;
+	public static @Option boolean bool; // A boolean option
 }

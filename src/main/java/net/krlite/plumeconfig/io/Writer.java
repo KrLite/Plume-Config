@@ -20,6 +20,7 @@ public class Writer {
 		} catch (IOException ioException) {
 			FileException.traceFileInitializingException(PlumeConfigMod.LOGGER, ioException, file);
 		}
+
 		try {
 			FileReader reader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(reader);
@@ -27,21 +28,28 @@ public class Writer {
 				ArrayList<String> raw = new ArrayList<>();
 				String line, lastLine = null;
 				while ((line = bufferedReader.readLine()) != null) {
-					if (line.startsWith("[") && line.endsWith("]") && !(lastLine == null)) {
-						raw.add(""); // Add empty lines before categories
+					if (line.startsWith("[") && line.endsWith("]")) { // If the line is a category
+						if (!raw.contains(line)) { // If it is not a duplicate
+							if (!(lastLine == null)) raw.add(""); // Add empty lines before categories
+							raw.add(line);
+						}
+					} else { // If the line is something else
+						raw.add(line); // Add the line
 					}
-					raw.add(line);
 					lastLine = line;
 				}
 				flipStream(raw);
+				// The flipped content is prepared for removing empty lines at tail
 				ArrayList<String> formatted = raw.stream().dropWhile(String::isEmpty).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+				// Flip it again to get the original order
 				flipStream(formatted);
 
-				initialize();
-				formatted.stream().limit(formatted.size() - 1).forEach(this::writeAndEndLine);
+				initialize(); // Clear the file
+				formatted.stream().limit(formatted.size() - 1).forEach(this::writeAndEndLine); // Write the content and add line breaks if not at tail
 				formatted.stream().skip(formatted.size() - 1).forEach(this::write);
 			}
 		} catch (IOException fileNotFoundException) {
+			// Why can't find the file? Just created it!
 			FileException.traceFileReadingException(PlumeConfigMod.LOGGER, fileNotFoundException, file);
 		}
 	}
@@ -55,6 +63,10 @@ public class Writer {
 		});
 	}
 
+	/**
+	 * Create the file if it does not exist.
+	 * @throws IOException	When the file cannot be created.
+	 */
 	public void create() throws IOException {
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();

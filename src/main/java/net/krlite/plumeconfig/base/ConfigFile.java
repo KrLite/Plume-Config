@@ -2,11 +2,13 @@ package net.krlite.plumeconfig.base;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.krlite.plumeconfig.PlumeConfigMod;
+import net.krlite.plumeconfig.annotation.Category;
 import net.krlite.plumeconfig.annotation.Comment;
 import net.krlite.plumeconfig.annotation.Option;
 import net.krlite.plumeconfig.exception.ClassException;
 import net.krlite.plumeconfig.exception.FieldException;
 import net.krlite.plumeconfig.exception.FileException;
+import net.krlite.plumeconfig.io.MappedString;
 import net.krlite.plumeconfig.io.Reader;
 import net.krlite.plumeconfig.io.Writer;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +24,7 @@ import java.util.Objects;
 public class ConfigFile {
 	private final String modid;
 	private final File file;
+	private final boolean formatted;
 
 	/**
 	 * Creates a new config file.
@@ -29,8 +32,16 @@ public class ConfigFile {
 	 * @param file	The file with absolute path, <strong>which file name must be <code>.toml</code> suffixed.</strong>
 	 */
 	public ConfigFile(String modid, File file) {
+		this(modid, file, true);
+	}
+
+	/**
+	 * @param formatted	Whether the config file should be formatted.
+	 */
+	public ConfigFile(String modid, File file, boolean formatted) {
 		this.modid = modid;
 		this.file = file;
+		this.formatted = formatted;
 	}
 
 	/**
@@ -38,7 +49,14 @@ public class ConfigFile {
 	 * @param modid	The modid of the mod that this config file belongs to.
 	 */
 	public ConfigFile(String modid) {
-		this(modid, FabricLoader.getInstance().getConfigDir().resolve(modid + ".toml").toFile());
+		this(modid, true);
+	}
+
+	/**
+	 * @param formatted	Whether the config file should be formatted.
+	 */
+	public ConfigFile(String modid, boolean formatted) {
+		this(modid, FabricLoader.getInstance().getConfigDir().resolve(modid + ".toml").toFile(), formatted);
 	}
 
 	/**
@@ -47,10 +65,18 @@ public class ConfigFile {
 	 * @param fileName	The name of the config file, <strong>which will be automatically suffixed.</strong>
 	 */
 	public ConfigFile(String modid, String fileName) {
+		this(modid, fileName, true);
+	}
+
+	/**
+	 * @param formatted	Whether the config file should be formatted.
+	 */
+	public ConfigFile(String modid, String fileName, boolean formatted) {
 		this(modid, FabricLoader.getInstance().getConfigDir()
 							.resolve(modid)
 							.resolve(fileName.replaceAll(".toml$" /* Replace .toml suffix in case for duplication */, "") + ".toml")
-							.toFile()
+							.toFile(),
+				formatted
 		);
 	}
 
@@ -78,9 +104,29 @@ public class ConfigFile {
 		} catch (IOException ioException) {
 			FileException.traceFileWritingException(PlumeConfigMod.LOGGER, ioException, file);
 		}
-		Field[] fields = instance.getClass().getDeclaredFields();
-		Arrays.stream(fields).forEach(this::iteratorFieldSave);
-		writer.format();
+
+		// Fields annotated by @Comment or @Option
+		Field[] fields = Arrays.stream(instance.getClass().getDeclaredFields())
+								 .filter(field -> field.isAnnotationPresent(Option.class) || field.isAnnotationPresent(Comment.class)).toArray(Field[]::new);
+
+		// Save Uncategorized fields
+		Arrays.stream(fields).filter(field -> !field.isAnnotationPresent(Category.class)).forEach(this::iteratorFieldSave);
+
+		// Categories
+		Category[] categories = Arrays.stream(fields)
+										.filter(field -> field.isAnnotationPresent(Category.class))
+										.map(field -> field.getAnnotation(Category.class))
+										.distinct().toArray(Category[]::new);
+
+		// Save categorized fields
+		Arrays.stream(categories).forEach(
+				category -> Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Category.class))
+						.filter(field -> field.getAnnotation(Category.class).equals(category))
+						.forEach(this::iteratorFieldSave)
+		);
+
+		// Format the config file
+		if (formatted) writer.format();
 	}
 
 	/**
@@ -92,13 +138,18 @@ public class ConfigFile {
 	@Nullable
 	public <T> T load(Class<T> clazz) {
 		try {
+			// Create a new instance
 			T instance = clazz.getDeclaredConstructor().newInstance();
 			TomlParseResult toml = new Reader(file).read();
+
+			// If empty, save the new instance
 			if (toml.isEmpty()) {
 				save(instance);
 				return instance;
 			}
 			Field[] fields = instance.getClass().getDeclaredFields();
+
+			// Load all fields annotated by @Option into the instance
 			Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Option.class)).forEach(field -> iteratorFieldLoad(field, toml));
 			return instance;
 		} catch (IllegalAccessException illegalAccessException) {
@@ -114,8 +165,12 @@ public class ConfigFile {
 	 * @param field	The field to be iterated.
 	 */
 	private void iteratorFieldSave(Field field) {
+		// Writes the category if exist
+		if (field.isAnnotationPresent(Category.class)) writeCategory(field.getAnnotation(Category.class));
+		field.setAccessible(true);
+
+		// Writes the field as a comment, if annotated by @Comment
 		if (field.isAnnotationPresent(Comment.class)) {
-			field.setAccessible(true);
 			try {
 				writeLine(field.get(field.getDeclaringClass().getDeclaredConstructor().newInstance()));
 			} catch (Exception exception) {
@@ -124,9 +179,9 @@ public class ConfigFile {
 			return;
 		}
 
+		// Writes the field as an option, if annotated by @Option and not annotated by @Comment
 		if (field.isAnnotationPresent(Option.class)) {
 			Option option = field.getAnnotation(Option.class);
-			field.setAccessible(true);
 			String key = !option.key().isEmpty() ? option.key() : field.getName();
 			try {
 				writeLine(
@@ -149,8 +204,12 @@ public class ConfigFile {
 	 */
 	private void iteratorFieldLoad(Field field, TomlParseResult toml) {
 		Option option = field.getAnnotation(Option.class);
-		String key = !option.key().isEmpty() ? option.key() : field.getName();
 		field.setAccessible(true);
+
+		// The key equals to the field name if not specified, or the specified category dotted key
+		String key = !option.key().isEmpty() ? option.key() : field.getName();
+		if (field.isAnnotationPresent(Category.class)) key = new MappedString(field.getAnnotation(Category.class).value()).mapLineBreaks().mapSpaces().get() + "." + key; // Line breaks are needed to be replaced by dots, but spaces are ok.
+
 		if (toml.contains(key)) {
 			try {
 				field.set(field.getDeclaringClass().getDeclaredConstructor().newInstance(),
@@ -161,18 +220,17 @@ public class ConfigFile {
 				ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, field.getDeclaringClass());
 			}
 		} else {
+			// The config file doesn't contain the key, why?
 			FieldException.traceKeyDoesntAppearException(PlumeConfigMod.LOGGER, file, field.getName());
 		}
 	}
 
 	/**
-	 * Writes a line into the file with the given objects.
+	 * Writes a line into the file with the given {@link Object}s.
 	 * @param contents	<strong>COMMENT: </strong>{comment}, <strong>OPTION: </strong>{key, value, name, comment}, anything else will be ignored.
 	 */
 	private void writeLine(Object... contents) {
-		if (contents.length == 0) {
-			return;
-		}
+		if (contents.length == 0) return;
 		Writer writer = new Writer(file);
 		contents = Arrays.stream(contents).filter(Objects::nonNull).filter(value -> !value.toString().isEmpty()).toArray(); // Filter null and empty values
 		if (contents.length <= 1) { // It's a comment
@@ -180,17 +238,27 @@ public class ConfigFile {
 					.forEach(line -> writer.writeAndEndLine("# " + line.replaceAll("\n", "")));
 		} else { // It's an option (contents are at least key+value)
 			writer.write(contents[0].toString() + " = " + contents[1].toString()); // key = value
-			if (contents.length >= 4) { // It has both a name and a comment
-				writer.writeAndEndLine(" # " + mapLineBreak(contents[2].toString()) + " | " + mapLineBreak(contents[3].toString()));
-			} else if (contents.length == 3) { // It has either a name or a comment
-				writer.writeAndEndLine(" # " + mapLineBreak(contents[2].toString()));
-			} else { // None of the above
-				writer.nextLine();
-			}
+			if (contents.length >= 4) {
+				// It has both a name and a comment
+				writer.writeAndEndLine(
+						" # " + new MappedString(contents[2].toString()).mapLineBreaks().get() + " | "
+								+ new MappedString(contents[3].toString()).mapLineBreaks().get()
+				);
+			} else if (contents.length == 3) {
+				// It has either a name or a comment
+				writer.writeAndEndLine(
+						" # " + new MappedString(contents[2].toString()).mapLineBreaks().get()
+				);
+			} else writer.nextLine(); // None of the above
 		}
 	}
 
-	private String mapLineBreak(String content) {
-		return content.replaceAll("\n" , "");
+	/**
+	 * Writes a category into the file.
+	 * @param category	The {@link Category} to be written.
+	 */
+	private void writeCategory(Category category) {
+		Writer writer = new Writer(file);
+		writer.writeAndEndLine("[" + new MappedString(category.value(), ".").mapLineBreaks().get() + "]"); // [category], line breaks are replaced by dots
 	}
 }

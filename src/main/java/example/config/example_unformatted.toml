@@ -3,11 +3,11 @@
 # commented line
 integer = 1 # Int
 bool = false
-
 [abc]
 s = "string" # String | A String Comment
+[abc]
 # comment3
+[abc]
 d = 1.0
-
 [def]
 color = 0xff000000

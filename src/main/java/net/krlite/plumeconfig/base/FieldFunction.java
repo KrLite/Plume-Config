@@ -12,14 +12,25 @@ import java.util.Optional;
 
 public class FieldFunction {
 	public static Object functions(String id, Class<?> type, Object o) {
+		// Build-in function
 		Optional<IFunction> function = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, IFunction.class).stream()
-									   .filter(container -> container.getProvider().getMetadata().getId().equals(id) || container.getProvider().getMetadata().getId().equals("plumeconfig"))
+									   .filter(container -> container.getProvider().getMetadata().getId().equals(PlumeConfigMod.MOD_ID))
 									   .map(EntrypointContainer::getEntrypoint)
 									   .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
 									   .filter(f -> Arrays.asList(f.getClass().getAnnotation(Convertor.class).to()).contains(type))
 									   .findFirst();
 
-		if (function.isPresent()) {
+		// Custom function
+		Optional<IFunction> customFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_FUNCTION, IFunction.class).stream()
+													 .filter(container -> container.getProvider().getMetadata().getId().equals(id))
+													 .map(EntrypointContainer::getEntrypoint)
+													 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
+													 .filter(f -> Arrays.asList(f.getClass().getAnnotation(Convertor.class).to()).contains(type))
+													 .findFirst();
+
+		if (customFunction.isPresent()) {
+			return customFunction.get().apply(o);
+		} else if (function.isPresent()) {
 			return function.get().apply(o);
 		} else {
 			return o;
@@ -27,14 +38,25 @@ public class FieldFunction {
 	}
 
 	public static Object savingFunctions(String id, Object o) {
+		// Build-in function
 		Optional<ISavingFunction> savingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, ISavingFunction.class).stream()
-											 .filter(container -> container.getProvider().getMetadata().getId().equals(id) || container.getProvider().getMetadata().getId().equals("plumeconfig"))
+											 .filter(container -> container.getProvider().getMetadata().getId().equals(PlumeConfigMod.MOD_ID))
 											 .map(EntrypointContainer::getEntrypoint)
 											 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
 											 .filter(f -> Arrays.asList(f.getClass().getAnnotation(Convertor.class).from()).contains(o.getClass()))
 											 .findFirst();
 
-		if (savingFunction.isPresent()) {
+		// Custom function
+		Optional<ISavingFunction> customSavingFunction = FabricLoader.getInstance().getEntrypointContainers(PlumeConfigMod.ENTRYPOINT_SAVING_FUNCTION, ISavingFunction.class).stream()
+																 .filter(container -> container.getProvider().getMetadata().getId().equals(id))
+																 .map(EntrypointContainer::getEntrypoint)
+																 .filter(f -> f.getClass().isAnnotationPresent(Convertor.class))
+																 .filter(f -> Arrays.asList(f.getClass().getAnnotation(Convertor.class).from()).contains(o.getClass()))
+																 .findFirst();
+
+		if (customSavingFunction.isPresent()) {
+			return customSavingFunction.get().apply(o);
+		} else if (savingFunction.isPresent()) {
 			return savingFunction.get().apply(o);
 		} else {
 			return o;
