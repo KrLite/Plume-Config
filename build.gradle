@@ -25,7 +25,7 @@ dependencies {
 	<tomlj-1.1.0-all>: TOML parser
 	https://github.com/tomlj/tomlj
 	 */
-	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation fileTree(dir: 'src/main/resources/libs', include: ['*.jar'])
 }
 
 sourceSets {
