@@ -32,7 +32,8 @@ repositories {
 dependencies {
     // Please use modApi instead of something else
     // Versions lower than v3.2.0 are outdated, and versions that are not latest are not recommended
-    modApi include("maven.modrinth:plumeconfig:v3.2.0")
+    // You are supposed to use the version identifier instead of the version number, you can check them at Modrinth Mod Version pages
+    modApi include("maven.modrinth:plumeconfig:z9sRsmg6")
 }
 ```
 
