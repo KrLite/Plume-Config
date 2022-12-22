@@ -136,7 +136,6 @@ public class ConfigFile {
 	 * @return		The loaded config instance.
 	 * @param <T>	The parameter of the instance class.
 	 */
-	@Nullable
 	public <T> T load(Class<T> clazz) {
 		try {
 			// Create a new instance
@@ -156,10 +155,11 @@ public class ConfigFile {
 			return instance;
 		} catch (IllegalAccessException illegalAccessException) {
 			ClassException.traceClassAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, clazz);
+			throw new RuntimeException(illegalAccessException);
 		} catch (InvocationTargetException | InstantiationException | NoSuchMethodException exception) {
 			ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, clazz);
+			throw new RuntimeException(exception);
 		}
-		return null;
 	}
 
 	/**
@@ -235,14 +235,14 @@ public class ConfigFile {
 								instance,
 								Arrays.stream((EnumLocalizable[]) field.get(instance).getClass().getEnumConstants())
 										.filter(enumLocalizable -> enumLocalizable.getLocalizedName().equals(value))
-										.findFirst().orElseThrow()
+										.findFirst().orElse((EnumLocalizable) field.get(instance))
 						);
 					} else {
 						field.set(
 								instance,
 								Arrays.stream((Enum<?>[]) field.get(instance).getClass().getEnumConstants())
 										.filter(enumConstant -> enumConstant.name().equals(value))
-										.findFirst().orElseThrow()
+										.findFirst().orElse((Enum<?>) field.get(instance))
 						);
 					}
 				} else {

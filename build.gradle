@@ -20,12 +20,11 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// Local libs
 	/*
 	<tomlj-1.1.0-all>: TOML parser
 	https://github.com/tomlj/tomlj
 	 */
-	implementation fileTree(dir: 'src/main/resources/libs', include: ['*.jar'])
+	implementation include("org.tomlj:tomlj:1.1.0")
 }
 
 sourceSets {
