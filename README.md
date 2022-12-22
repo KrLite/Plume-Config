@@ -63,7 +63,7 @@ repositories {
 ```groovy
 dependencies {
     /* Plume Config v3.2.0 */
-    modApi include("maven.modrinth:plumeconfig:z9sRsmg6")
+    modApi include("maven.modrinth:plumeconfig:BEzCoEZO")
 }
 ```
 
