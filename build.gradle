@@ -11,6 +11,9 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	flatDir {
+		dirs 'libs'
+	}
 }
 
 dependencies {
@@ -24,7 +27,7 @@ dependencies {
 	<tomlj-1.1.0-all>: TOML parser
 	https://github.com/tomlj/tomlj
 	 */
-	implementation include("org.tomlj:tomlj:1.1.0")
+	implementation include("libs:tomlj-1.1.0-all")
 }
 
 sourceSets {
