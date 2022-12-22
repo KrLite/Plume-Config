@@ -302,4 +302,4 @@ Pretty cool, right? Plume Config doesn't support all toml features now, but we a
 
 ## License
 
-Plume Config is licensed under the [MIT License](LICENSE).
+Plume Config is licensed under the [GNU Public License](LICENSE).
