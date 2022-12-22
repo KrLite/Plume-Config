@@ -12,7 +12,6 @@ Plume Config is a lightweight configuration library made for Minecraft Mods, usi
 
 ```groovy
 repositories {
-    // ...
     maven {
         url = "https://api.modrinth.com/maven"
     }
