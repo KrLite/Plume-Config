@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     /* Plume Config v3.2.0 */
-    modApi include("maven.modrinth:plumeconfig:z9sRsmg6")
+    modApi include("maven.modrinth:plumeconfig:BEzCoEZO")
     
     /* Tomlj 1.1.0 for mod local runtime */
     modLocalRuntime("org.tomlj:tomlj:1.1.0")
