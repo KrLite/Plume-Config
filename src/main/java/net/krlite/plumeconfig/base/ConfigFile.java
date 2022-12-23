@@ -186,21 +186,6 @@ public class ConfigFile {
 		if (field.isAnnotationPresent(Category.class)) writeCategory(field.getAnnotation(Category.class));
 		field.setAccessible(true);
 
-		// Writes the field comments if annotated by @Comments, otherwise writes the comment if annotated by @Comment
-		if (field.isAnnotationPresent(Comments.class)) {
-			Comments comments = field.getAnnotation(Comments.class);
-			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
-				if (comment.newLine().isBefore()) writeLine("");
-				writeLine(comment.value());
-				if (comment.newLine().isAfter()) writeLine("");
-			});
-		} else if (field.isAnnotationPresent(Comment.class)) {
-			Comment comment = field.getAnnotation(Comment.class);
-			if (comment.newLine().isBefore()) writeLine("");
-			writeLine(comment.value());
-			if (comment.newLine().isAfter()) writeLine("");
-		}
-
 		// Writes the field option
 		if (field.isAnnotationPresent(Option.class)) {
 			Option option = field.getAnnotation(Option.class);
@@ -230,6 +215,21 @@ public class ConfigFile {
 			} catch (IllegalAccessException illegalAccessException) {
 				FieldException.traceFieldAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, file, field);
 			}
+		}
+
+		// Writes the field comments if annotated by @Comments, otherwise writes the comment if annotated by @Comment
+		if (field.isAnnotationPresent(Comments.class)) {
+			Comments comments = field.getAnnotation(Comments.class);
+			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
+				if (comment.newLine().isBefore()) writeLine("");
+				writeLine(comment.value());
+				if (comment.newLine().isAfter()) writeLine("");
+			});
+		} else if (field.isAnnotationPresent(Comment.class)) {
+			Comment comment = field.getAnnotation(Comment.class);
+			if (comment.newLine().isBefore()) writeLine("");
+			writeLine(comment.value());
+			if (comment.newLine().isAfter()) writeLine("");
 		}
 	}
 
