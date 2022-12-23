@@ -1,11 +1,13 @@
 package net.krlite.plumeconfig.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import net.krlite.plumeconfig.io.LineBreak;
 
-@Target(ElementType.FIELD)
+import java.lang.annotation.*;
+
+@Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(Comments.class)
 public @interface Comment {
+	String value() default "";
+	LineBreak newLine() default LineBreak.NONE;
 }

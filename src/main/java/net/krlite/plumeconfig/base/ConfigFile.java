@@ -4,6 +4,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.krlite.plumeconfig.PlumeConfigMod;
 import net.krlite.plumeconfig.annotation.Category;
 import net.krlite.plumeconfig.annotation.Comment;
+import net.krlite.plumeconfig.annotation.Comments;
 import net.krlite.plumeconfig.annotation.Option;
 import net.krlite.plumeconfig.api.EnumLocalizable;
 import net.krlite.plumeconfig.exception.ClassException;
@@ -12,7 +13,6 @@ import net.krlite.plumeconfig.exception.FileException;
 import net.krlite.plumeconfig.io.MappedString;
 import net.krlite.plumeconfig.io.Reader;
 import net.krlite.plumeconfig.io.Writer;
-import org.jetbrains.annotations.Nullable;
 import org.tomlj.TomlParseResult;
 
 import java.io.File;
@@ -106,9 +106,24 @@ public class ConfigFile {
 			FileException.traceFileWritingException(PlumeConfigMod.LOGGER, ioException, file);
 		}
 
+		// Writes the class comments if annotated by @Comments, otherwise writes the comment if annotated by @Comment
+		if (instance.getClass().isAnnotationPresent(Comments.class)) {
+			Comments comments = instance.getClass().getAnnotation(Comments.class);
+			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
+				if (comment.newLine().isBefore()) writeLine("");
+				writeLine(comment.value());
+				if (comment.newLine().isAfter()) writeLine("");
+			});
+		} else if (instance.getClass().isAnnotationPresent(Comment.class)) {
+			Comment comment = instance.getClass().getAnnotation(Comment.class);
+			if (comment.newLine().isBefore()) writeLine("");
+			writeLine(comment.value());
+			if (comment.newLine().isAfter()) writeLine("");
+		}
+
 		// Fields annotated by @Comment or @Option
 		Field[] fields = Arrays.stream(instance.getClass().getDeclaredFields())
-								 .filter(field -> field.isAnnotationPresent(Option.class) || field.isAnnotationPresent(Comment.class)).toArray(Field[]::new);
+								 .filter(field -> field.isAnnotationPresent(Option.class)).toArray(Field[]::new);
 
 		// Save Uncategorized fields
 		Arrays.stream(fields).filter(field -> !field.isAnnotationPresent(Category.class)).forEach(field -> iteratorFieldSave(instance, field));
@@ -171,36 +186,41 @@ public class ConfigFile {
 		if (field.isAnnotationPresent(Category.class)) writeCategory(field.getAnnotation(Category.class));
 		field.setAccessible(true);
 
-		// Writes the field as a comment, if annotated by @Comment
-		if (field.isAnnotationPresent(Comment.class)) {
-			try {
-				writeLine(field.get(instance));
-			} catch (IllegalAccessException illegalAccessException) {
-				FieldException.traceFieldAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, file, field);
-			}
-			return;
+		// Writes the field comments if annotated by @Comments, otherwise writes the comment if annotated by @Comment
+		if (field.isAnnotationPresent(Comments.class)) {
+			Comments comments = field.getAnnotation(Comments.class);
+			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
+				if (comment.newLine().isBefore()) writeLine("");
+				writeLine(comment.value());
+				if (comment.newLine().isAfter()) writeLine("");
+			});
+		} else if (field.isAnnotationPresent(Comment.class)) {
+			Comment comment = field.getAnnotation(Comment.class);
+			if (comment.newLine().isBefore()) writeLine("");
+			writeLine(comment.value());
+			if (comment.newLine().isAfter()) writeLine("");
 		}
 
-		// Writes the field as an option, if annotated by @Option and not annotated by @Comment
+		// Writes the field option
 		if (field.isAnnotationPresent(Option.class)) {
 			Option option = field.getAnnotation(Option.class);
 			String key = !option.key().isEmpty() ? option.key() : field.getName();
 			try {
 				if (field.getType().isEnum()) {
-					if (EnumLocalizable.class.isAssignableFrom(field.getType())) {
+					if (EnumLocalizable.class.isAssignableFrom(field.getType())) { // Localizable enum (Enum<?> extends EnumLocalizable)
 						writeLine(
 								key, FieldFunction.savingFunctions(modid,
 										((EnumLocalizable) field.get(instance)).getLocalizedName()),
 								option.name(), option.comment()
 						);
-					} else {
+					} else { // Non-localizable enum (Enum<?>)
 						writeLine(
 								key, FieldFunction.savingFunctions(modid,
 										((Enum<?>) field.get(instance)).name()),
 								option.name(), option.comment()
 						);
 					}
-				} else {
+				} else { // Non-enum
 					writeLine(
 							key, FieldFunction.savingFunctions(modid,
 									field.get(instance)),
@@ -230,14 +250,14 @@ public class ConfigFile {
 			try {
 				if (field.getType().isEnum()) {
 					String value = toml.getString(key);
-					if (EnumLocalizable.class.isAssignableFrom(field.getType())) {
+					if (EnumLocalizable.class.isAssignableFrom(field.getType())) { // Localizable enum (Enum<?> extends EnumLocalizable)
 						field.set(
 								instance,
 								Arrays.stream((EnumLocalizable[]) field.get(instance).getClass().getEnumConstants())
 										.filter(enumLocalizable -> enumLocalizable.getLocalizedName().equals(value))
 										.findFirst().orElse((EnumLocalizable) field.get(instance))
 						);
-					} else {
+					} else { // Non-localizable enum (Enum<?>)
 						field.set(
 								instance,
 								Arrays.stream((Enum<?>[]) field.get(instance).getClass().getEnumConstants())
@@ -245,7 +265,7 @@ public class ConfigFile {
 										.findFirst().orElse((Enum<?>) field.get(instance))
 						);
 					}
-				} else {
+				} else { // Non-enum
 					field.set(instance, FieldFunction.functions(modid, field.getType(), toml.get(key)));
 				}
 			} catch (IllegalAccessException illegalAccessException) {
@@ -264,11 +284,15 @@ public class ConfigFile {
 	private void writeLine(Object... contents) {
 		if (contents.length == 0) return;
 		Writer writer = new Writer(file);
-		contents = Arrays.stream(contents).filter(Objects::nonNull).filter(value -> !value.toString().isEmpty()).toArray(); // Filter null and empty values
-		if (contents.length <= 1) { // It's a comment
+		contents = Arrays.stream(contents).filter(Objects::nonNull).toArray(); // Filter null values
+		if (contents.length <= 1) { // A comment
 			Arrays.stream(contents[0].toString().split("\n"))
-					.forEach(line -> writer.writeAndEndLine("# " + line.replaceAll("\n", "")));
-		} else { // It's an option (contents are at least key+value)
+					.forEach(line -> {
+						if (!line.isEmpty()) writer.writeAndEndLine("# " + new MappedString(line).mapLineBreaks().get());
+						else writer.writeAndEndLine("");
+					});
+		} else { // An option (contents are at least key+value)
+			contents = Arrays.stream(contents).filter(content -> !content.toString().isEmpty()).toArray(); // Filter empty values
 			writer.write(contents[0].toString() + " = " + contents[1].toString()); // key = value
 			if (contents.length >= 4) {
 				// It has both a name and a comment

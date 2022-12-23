@@ -38,8 +38,9 @@ public class Writer {
 					}
 					lastLine = line;
 				}
+				raw = raw.stream().dropWhile(String::isEmpty).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 				flipStream(raw);
-				// The flipped content is prepared for removing empty lines at tail
+				// Remove empty lines at the start of the stream
 				ArrayList<String> formatted = raw.stream().dropWhile(String::isEmpty).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 				// Flip it again to get the original order
 				flipStream(formatted);
