@@ -264,7 +264,7 @@ import java.awt.*;
 @Comment("This file controls your player behaviour in game", newLine = LineBreak.AFTER)
 public class MyConfig {
 	@Option(key = "player_name", name = "Player Name", comment = "Your name in the game")
-	public String playerName = "Lambda Sigma";
+	public String playerName = "Sigma";
 
 	@Option(comment = "Health bar length")
 	public double health = 1.0;
@@ -299,8 +299,8 @@ Your config file(`run/config/my_modid/my_config.toml`) will look like this:
 ```toml
 # This file controls your player behaviour in game
 
-player_name = "Lambda Sigma" # Player Name | Your name in the game
-health = 1.0 # Change this number smaller to make your mouse faster
+player_name = "Sigma" # Player Name | Your name in the game
+health = 1.0 # Health bar length
 streaming_switch = false # Toggle streaming mode
 
 [misc]
@@ -327,7 +327,7 @@ public class MyModInitializer implements ModInitializer {
         System.out.println(CONFIG_INSTANCE.identity);
         System.out.println(CONFIG_INSTANCE.streamingSwitch);
 
-	CONFIG_INSTANCE.playerName = "Lambda Sigma 2";
+	CONFIG_INSTANCE.playerName = "Lambda";
 	CONFIG_INSTANCE.identity = Color.RED;
 
 	// Don't forget to save your config after changes!
