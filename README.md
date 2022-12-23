@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     /* Plume Config v3.2.1 */
-    modApi include("maven.modrinth:plumeconfig:IRXVgRiH")
+    modApi include("maven.modrinth:plumeconfig:4uCYxiEc")
     
     /* Tomlj 1.1.0 for mod local runtime */
     modLocalRuntime("org.tomlj:tomlj:1.1.0")
@@ -63,7 +63,7 @@ repositories {
 ```groovy
 dependencies {
     /* Plume Config v3.2.1 */
-    modApi include("maven.modrinth:plumeconfig:IRXVgRiH")
+    modApi include("maven.modrinth:plumeconfig:4uCYxiEc")
 }
 ```
 
