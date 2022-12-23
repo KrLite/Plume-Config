@@ -82,18 +82,23 @@ dependencies {
 [`example.toml`](src/main/java/example/config/example.toml)
 
 ```toml
-# 1
-# comment2
-# commented line
+# This is a comment
+# at the top of the file
+
+# An integer
 integer = 1 # Int
+# A boolean
 bool = false
 
 [abc]
+# Multi-line
+# comment
 s = "string" # String | A String Comment
-# comment3
 d = 1.0
 
 [def]
+# A color
+# Which is under supported
 color = 0xff000000
 ```
 
@@ -102,6 +107,8 @@ color = 0xff000000
 An example class is available: [`Example.java`](src/main/java/example/Example.java).
 
 When you're readily implemented, you'll find it's easy to use, thanks to all the annotations and instance-based methods.
+
+### Instance
 
 First of all, declare a `ConfigFile` instance:
 
@@ -118,6 +125,8 @@ public class MyConfig {
     // Keep reading...
 }
 ```
+
+### `@Option`
 
 In the class, when you want to declare a field as an option, just use the annotation `@Option`:
 
@@ -150,6 +159,20 @@ different_key = "string"
 
 > You cannot use duplicate keys in the same file, Plume Config will not check that, but may crash or cause unexpected behavior.
 
+In special cases, multi-line string contents will be in multi-line format:
+
+```java
+@Option
+public String s = "Multi-\nline\\\nString!"
+```
+
+```toml
+s = """
+Multi
+line\
+String!"""
+```
+
 You can also add a name and a comment to an option:
 
 ```java
@@ -165,46 +188,60 @@ s = "string" # String | A String Comment
 integer = 1 # Integer
 ```
 
-Beside the `@Option` annotation, you can also use the `@Comment` annotation to annotate fields to comments:
+### `@Comment`
+
+Beside the `@Option` annotation, you can also use the `@Comment` annotation to append comments to fields:
 
 ```java
-@Comment
-public String s = "Commented Line";
+@Comment("Commented")
+@Comment("By two")
+public @Option String s = "String";
 
-@Comment
-private static int i = 12345;
+@Comment(value = "Also commented", newLine = LineBreak.BEFORE)
+private @Option static int i = 12345;
 ```
 
 ```toml
-# Commented Line
-# 12345
+s = "String"
+# Commented
+# By two
+i = 12345
+
+# Also commented
 ```
 
-> The `@Comment` annotation can only be used on fields, and it will not be operated as an option.
-> If a field is annotated with both `@Option` and `@Comment`, the `@Option` annotation will be ignored, which means the field will be seen as a comment.
+> `@Comment` annotations only work when the target field is already annotated by `@Option`.
+> 
+> It is fine to use as many `@Comment` annotations as you want, each will take a line.
+> 
+> The enum class `LineBreak` can be used to define the behaviour of the line breaks.
 
-In special cases, multi-line string contents will be in multi-line format:
+The `@Comment` annotations can not only be used on fields, but also be used before class definations.
 
 ```java
-@Option
-public String s = "Multi-\nline\\\nString!"
+@Comment("This is a comment")
+@Comment(value = "at the top of the file", newLine = LineBreak.AFTER)
+public class MyConfig {
+	//...
+}
 ```
 
 ```toml
-s = """
-Multi
-line\
-String!"""
+# This is a comment
+# at the top of the file
+
+
+
 ```
+
+### `@Category`
 
 One of the main features of TOML is categories(work as dotted keys), and Plume Config also supports it by using the `@Category` annotation:
 
 ```java
-@Category("abc")
-public @Comment String catComment="Categorized Comment";
-
 public @Option String uncat="Uncategorized";
 
+@Comment("Categorized comment")
 @Category("abc")
 public @Option String cat="Categorized";
 ```
@@ -213,8 +250,8 @@ public @Option String cat="Categorized";
 uncat = "Uncategorized"
 
 [abc]
-# Categorized Comment
 cat = "Categorized"
+# Categorized comment
 ```
 
 > The order of the fields is not important, Plume Config will sort them automatically by categories.
@@ -224,22 +261,21 @@ That's how it works. Now write some configs into your class:
 ```java
 import java.awt.*;
 
+@Comment("This file controls your player behaviour in game", newLine = LineBreak.AFTER)
 public class MyConfig {
 	@Option(key = "player_name", name = "Player Name", comment = "Your name in the game")
 	public String playerName = "Lambda Sigma";
 
-	@Option(comment = "Change this number smaller to make your mouse faster")
-	public double d = 1.0;
+	@Option(comment = "Health bar length")
+	public double health = 1.0;
 
+	@Comment("Don't change this unless in development environment")
 	@Category("misc")
-	@Comment public String comment = "=-Misc-=";
-
-	@Option(comment = "The only identity in the map")
-	public int color = Color.BLACK;
-
-	@Category("misc")
-	@Option(name = "Streaming switch", comment = "Toggle streaming mode")
-	public boolean bool = false;
+	@Option(comment = "Your only identity")
+	public int identity = Color.BLACK;
+	
+	@Option(key = "streaming_switch", comment = "Toggle streaming mode")
+	public boolean streamingSwitch = false;
 }
 ```
 
@@ -261,13 +297,15 @@ public class MyModInitializer implements ModInitializer {
 Your config file(`run/config/my_modid/my_config.toml`) will look like this:
 
 ```toml
+# This file controls your player behaviour in game
+
 player_name = "Lambda Sigma" # Player Name | Your name in the game
-d = 1.0 # Change this number smaller to make your mouse faster
-color = 0xff000000 # The only identity in the map
+health = 1.0 # Change this number smaller to make your mouse faster
+streaming_switch = false # Toggle streaming mode
 
 [misc]
-# =-Misc-=
-bool = false # Streaming switch | Toggle streaming mode
+identity = 0xff000000 # Your only identity in the map
+# Don't change this unless in development environment
 ```
 
 In your code, make sure everytime you load your mod, you read your config first.
@@ -285,12 +323,12 @@ public class MyModInitializer implements ModInitializer {
 		
 	// They are good now
         System.out.println(CONFIG_INSTANCE.playerName);
-        System.out.println(CONFIG_INSTANCE.d);
-        System.out.println(CONFIG_INSTANCE.color);
-        System.out.println(CONFIG_INSTANCE.bool);
+        System.out.println(CONFIG_INSTANCE.health);
+        System.out.println(CONFIG_INSTANCE.identity);
+        System.out.println(CONFIG_INSTANCE.streamingSwitch);
 
 	CONFIG_INSTANCE.playerName = "Lambda Sigma 2";
-	CONFIG_INSTANCE.color = Color.RED;
+	CONFIG_INSTANCE.identity = Color.RED;
 
 	// Don't forget to save your config after changes!
         CONFIG.save(CONFIG_INSTANCE); // Now don't insert MyConfig.class, instead, use the config instance.
@@ -298,7 +336,7 @@ public class MyModInitializer implements ModInitializer {
 }
 ```
 
-Pretty cool, right? Plume Config doesn't support all toml features now, but we are always making everything better. Just watch our project if you are interested in the progress!
+Pretty cool, right? Plume Config may not supporting all toml features now, but we are always making everything better. Just watch our project if you are interested in the progress!
 
 ## License
 
