@@ -13,6 +13,7 @@ import net.krlite.plumeconfig.exception.FileException;
 import net.krlite.plumeconfig.io.MappedString;
 import net.krlite.plumeconfig.io.Reader;
 import net.krlite.plumeconfig.io.Writer;
+import org.jetbrains.annotations.NotNull;
 import org.tomlj.TomlParseResult;
 
 import java.io.File;
@@ -22,58 +23,53 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class ConfigFile {
-	private final String modid;
-	private final File file;
-	private final boolean formatted;
-
+/**
+ * A class that represents a configuration file.
+ * @param config	The configuration class.
+ * @param modid		The id of the mod.
+ * @param file		The file to be saved/loaded.
+ * @param formatted	Whether the file should be formatted.
+ * @param <T>		The type of the configuration class.
+ */
+public record ConfigFile<T>(@NotNull Config<T> config, @NotNull String modid, @NotNull File file, boolean formatted) {
 	/**
-	 * Creates a new config file.
-	 * @param modid	The modid of the mod that this config file belongs to.
-	 * @param file	The file with absolute path, <strong>which file name must be <code>.toml</code> suffixed.</strong>
+	 * Creates a new ConfigFile instance.
+	 * @param clazz	The class which the config instance belongs.
+	 * @param modid	The id of the mod.
 	 */
-	public ConfigFile(String modid, File file) {
-		this(modid, file, true);
+	public ConfigFile(Class<T> clazz, String modid) {
+		this(clazz, modid, true);
 	}
 
 	/**
+	 * Creates a new ConfigFile instance.
+	 * @param clazz		The class which the config instance belongs.
+	 * @param modid		The id of the mod.
 	 * @param formatted	Whether the config file should be formatted.
 	 */
-	public ConfigFile(String modid, File file, boolean formatted) {
-		this.modid = modid;
-		this.file = file;
-		this.formatted = formatted;
+	public ConfigFile(Class<T> clazz, String modid, boolean formatted) {
+		this(clazz, modid, FabricLoader.getInstance().getConfigDir().resolve(modid + ".toml").toFile(), formatted);
 	}
 
 	/**
-	 * Creates a new config file named <code>&lt;modid&gt;.toml</code> under the game config directory.
-	 * @param modid	The modid of the mod that this config file belongs to.
+	 * Creates a new ConfigFile instance.
+	 * @param clazz		The class which the config instance belongs.
+	 * @param modid		The id of the mod.
+	 * @param fileName	The name of the file that this config will be saved to, no need to be suffixed.
 	 */
-	public ConfigFile(String modid) {
-		this(modid, true);
+	public ConfigFile(Class<T> clazz, String modid, String fileName) {
+		this(clazz, modid, fileName, true);
 	}
 
 	/**
+	 * Creates a new ConfigFile instance.
+	 * @param clazz		The class which the config instance belongs.
+	 * @param modid		The id of the mod.
+	 * @param fileName	The name of the file that this config will be saved to, no need to be suffixed.
 	 * @param formatted	Whether the config file should be formatted.
 	 */
-	public ConfigFile(String modid, boolean formatted) {
-		this(modid, FabricLoader.getInstance().getConfigDir().resolve(modid + ".toml").toFile(), formatted);
-	}
-
-	/**
-	 * Creates a new config file under a subdirectory named <code>&lt;modid&gt;</code> under the game config directory.
-	 * @param modid		The modid of the mod that this config file belongs to.
-	 * @param fileName	The name of the config file, <strong>which will be automatically suffixed.</strong>
-	 */
-	public ConfigFile(String modid, String fileName) {
-		this(modid, fileName, true);
-	}
-
-	/**
-	 * @param formatted	Whether the config file should be formatted.
-	 */
-	public ConfigFile(String modid, String fileName, boolean formatted) {
-		this(modid, FabricLoader.getInstance().getConfigDir()
+	public ConfigFile(Class<T> clazz, String modid, String fileName, boolean formatted) {
+		this(clazz, modid, FabricLoader.getInstance().getConfigDir()
 							.resolve(modid)
 							.resolve(fileName.replaceAll(".toml$" /* Replace .toml suffix in case for duplication */, "") + ".toml")
 							.toFile(),
@@ -82,23 +78,51 @@ public class ConfigFile {
 	}
 
 	/**
-	 * Load the config file into an instance, and save it right away.
-	 * @param clazz	The class of the config instance.
-	 * @return		The loaded config instance.
-	 * @param <T>	The parameter of the instance class.
+	 * Create a new ConfigFile instance.
+	 * @param clazz	The class which the config instance belongs.
+	 * @param modid	The if of the mod.
+	 * @param file	The file to be saved/loaded.
 	 */
-	public <T> T loadAndSave(Class<T> clazz) {
-		T instance = load(clazz);
-		save(instance);
-		return instance;
+	public ConfigFile(Class<T> clazz, String modid, File file) {
+		this(clazz, modid, file, true);
 	}
 
 	/**
-	 * Saves the config instance into the file.
-	 * @param instance	The config instance to be saved.
-	 * @param <T>		The parameter of the instance class.
+	 * Creates a new ConfigFile instance.
+	 * @param clazz		The class which the config instance belongs.
+	 * @param modid		The id of the mod.
+	 * @param file		The file to be saved/loaded.
+	 * @param formatted	Whether the config file should be formatted.
 	 */
-	public <T> void save(T instance) {
+	public ConfigFile(Class<T> clazz, String modid, File file, boolean formatted) {
+		this(new Config<T>(clazz), modid, file, formatted);
+	}
+
+	/**
+	 * Loads the config instance from the file, and then save it.
+	 * @return	The config instance.
+	 */
+	public T operate() {
+		return save(load());
+	}
+
+	/**
+	 * Loads the config instance from the file, and then save it.
+	 * @param forceLoad	Whether to force load the config from the file.<br />
+	 *                  <code>true</code>:	reload the config from the file.<br />
+	 *                  <code>false</code>:	load the config from the file only if not loaded.
+	 * @return			The config instance.
+	 */
+	public T operate(boolean forceLoad) {
+		return save(load(forceLoad));
+	}
+
+	/**
+	 * Saves the config instance to file.
+	 * @param instance	The config instance to be saved.
+	 * @return			The config instance itself.
+	 */
+	public T save(T instance) {
 		Writer writer = new Writer(file);
 		try {
 			writer.initialize();
@@ -110,15 +134,15 @@ public class ConfigFile {
 		if (instance.getClass().isAnnotationPresent(Comments.class)) {
 			Comments comments = instance.getClass().getAnnotation(Comments.class);
 			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
-				if (comment.newLine().isBefore()) writeLine("");
+				if (comment.end().isBefore()) writeLine("");
 				writeLine(comment.value());
-				if (comment.newLine().isAfter()) writeLine("");
+				if (comment.end().isAfter()) writeLine("");
 			});
 		} else if (instance.getClass().isAnnotationPresent(Comment.class)) {
 			Comment comment = instance.getClass().getAnnotation(Comment.class);
-			if (comment.newLine().isBefore()) writeLine("");
+			if (comment.end().isBefore()) writeLine("");
 			writeLine(comment.value());
-			if (comment.newLine().isAfter()) writeLine("");
+			if (comment.end().isAfter()) writeLine("");
 		}
 
 		// Fields annotated by @Comment or @Option
@@ -143,18 +167,31 @@ public class ConfigFile {
 
 		// Format the config file
 		if (formatted) writer.format();
+
+		return instance;
 	}
 
 	/**
-	 * Loads the config file into an instance.
-	 * @param clazz	The class of the config instance.
-	 * @return		The loaded config instance.
-	 * @param <T>	The parameter of the instance class.
+	 * Loades the config instance from the file if not loaded.
+	 * @return	The config instance.
 	 */
-	public <T> T load(Class<T> clazz) {
+	public T load() {
+		return load(false);
+	}
+
+	/**
+	 * Loads the config instance from the file.
+	 * @param forceLoad	Whether to force load the config from the file.<br />
+	 *                  <code>true</code>:	reload the config from the file.<br />
+	 *                  <code>false</code>:	load the config from the file only if not loaded.
+	 * @return			The config instance.
+	 */
+	public T load(boolean forceLoad) {
+		// Avoid parallel loading
+		if (!forceLoad && config.hasInstance()) return config.instance;
+
 		try {
-			// Create a new instance
-			T instance = clazz.getDeclaredConstructor().newInstance();
+			T instance = config.clazz.getDeclaredConstructor().newInstance();
 			TomlParseResult toml = new Reader(file).read();
 
 			// If empty, save the new instance
@@ -167,12 +204,14 @@ public class ConfigFile {
 			// Load all fields annotated by @Option into the instance
 			Arrays.stream(fields).filter(field -> field.isAnnotationPresent(Option.class))
 					.forEach(field -> iteratorFieldLoad(instance, field, toml));
-			return instance;
+
+			// Override the config instance
+			return config.accept(instance);
 		} catch (IllegalAccessException illegalAccessException) {
-			ClassException.traceClassAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, clazz);
+			ClassException.traceClassAccessingException(PlumeConfigMod.LOGGER, illegalAccessException, config.clazz);
 			throw new RuntimeException(illegalAccessException);
 		} catch (InvocationTargetException | InstantiationException | NoSuchMethodException exception) {
-			ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, clazz);
+			ClassException.traceClassConstructingException(PlumeConfigMod.LOGGER, exception, config.clazz);
 			throw new RuntimeException(exception);
 		}
 	}
@@ -185,6 +224,10 @@ public class ConfigFile {
 		// Writes the category if exist
 		if (field.isAnnotationPresent(Category.class)) writeCategory(field.getAnnotation(Category.class));
 		field.setAccessible(true);
+
+		// Writes the field's comment(s) before field
+		if (field.isAnnotationPresent(Comments.class)) iteratorFieldComment(Arrays.stream(field.getAnnotation(Comments.class).value()).filter(Comment::beforeField).toArray(Comment[]::new));
+		else if (field.isAnnotationPresent(Comment.class) && field.getAnnotation(Comment.class).beforeField()) iteratorFieldComment(new Comment[]{field.getAnnotation(Comment.class)});
 
 		// Writes the field option
 		if (field.isAnnotationPresent(Option.class)) {
@@ -217,20 +260,21 @@ public class ConfigFile {
 			}
 		}
 
-		// Writes the field comments if annotated by @Comments, otherwise writes the comment if annotated by @Comment
-		if (field.isAnnotationPresent(Comments.class)) {
-			Comments comments = field.getAnnotation(Comments.class);
-			Arrays.stream(comments.value()).filter(Objects::nonNull).forEach(comment -> {
-				if (comment.newLine().isBefore()) writeLine("");
-				writeLine(comment.value());
-				if (comment.newLine().isAfter()) writeLine("");
-			});
-		} else if (field.isAnnotationPresent(Comment.class)) {
-			Comment comment = field.getAnnotation(Comment.class);
-			if (comment.newLine().isBefore()) writeLine("");
+		// Writes the field's comment(s) after field
+		if (field.isAnnotationPresent(Comments.class)) iteratorFieldComment(Arrays.stream(field.getAnnotation(Comments.class).value()).filter(comment -> !comment.beforeField()).toArray(Comment[]::new));
+		else if (field.isAnnotationPresent(Comment.class) && !field.getAnnotation(Comment.class).beforeField()) iteratorFieldComment(new Comment[]{field.getAnnotation(Comment.class)});
+	}
+
+	/**
+	 * Iterates and writes the field's comments.
+	 * @param comments	The comments to be iterated.
+	 */
+	private void iteratorFieldComment(Comment[] comments) {
+		Arrays.stream(comments).filter(Objects::nonNull).forEach(comment -> {
+			if (comment.end().isBefore()) writeLine("");
 			writeLine(comment.value());
-			if (comment.newLine().isAfter()) writeLine("");
-		}
+			if (comment.end().isAfter()) writeLine("");
+		});
 	}
 
 	/**

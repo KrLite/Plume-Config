@@ -8,30 +8,26 @@ import net.krlite.plumeconfig.io.LineBreak;
 import java.awt.*;
 
 @Comment("This is a comment")
-@Comment(value = "at the top of the file", newLine = LineBreak.AFTER)
+@Comment(value = "at the top of the file", end = LineBreak.AFTER)
 public class Example {
-	@Comment("Multi-line\ncomment")
-	@Option(name = "String", comment = "A String\n Comment")
 	@Category("abc")
-	public String s = "string"; // A String option named "String" with a comment(line breaks will be ignored)
+	@Comment(value = "Multi-line\ncomment, before the field", beforeField = true)
+	@Option(name = "String", comment = "A string\n comment")
+	public String s = "string";
 
 	@Comment("An integer")
-	@Option(key = "integer", name = "Int") // An Integer option named "Int" with a specified key "integer"
+	@Option(key = "integer", name = "Int")
 	public int i = 1;
 
 	@Category("abc")
-	private static final @Option double d = 1.0; // A double option in the category "abc"
+	private static final @Option double d = 1.0;
 
-	public static int silent = 1; // No annotations, will be ignored
+	public static int silent = 1;
 
-	@Comment("This comment is useless and won't appear")
-	private static final int silent2 = 1;
-
-	@Comment("A color")
-	@Comment("Which is under supported")
 	@Category("def")
-	public static @Option Color color = Color.BLACK; // A Color option in the category "def"
+	@Comment("A color field")
+	@Comment("which is under supported")
+	public static @Option Color color = Color.BLACK;
 
-	@Comment("A boolean")
-	public static @Option boolean bool; // A boolean option
+	public static @Option boolean bool;
 }

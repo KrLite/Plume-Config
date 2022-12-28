@@ -11,6 +11,5 @@ public class PlumeConfigMod implements ModInitializer {
 	public static final String ENTRYPOINT_SAVING_FUNCTION = MOD_ID + "-savingfunction";
 
 	@Override
-	public void onInitialize() {
-	}
+	public void onInitialize() {}
 }

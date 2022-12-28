@@ -1,7 +1,8 @@
 package net.krlite.plumeconfig.api;
 
-import java.util.Arrays;
-
+/**
+ * Provides a way to localize an enum.
+ */
 public interface EnumLocalizable {
 	String getLocalizedName();
 }
