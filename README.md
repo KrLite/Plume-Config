@@ -2,9 +2,11 @@
 
 ![Banner](artwork/banner.png)
 
-# Plume Config [`based on TOML`](https://toml.io)
+### <p align=right>[Modrinth →](https://modrinth.com/mod/plumeconfig)<br /><sub>[Based on `TOML`](https://toml.io)&ensp;&emsp;</sub></p>
 
-Plume Config is a lightweight configuration library made for Minecraft Mods, using [Tom's Obvious Minimal Language `TOML`](https://toml.io).
+# Plume Config
+
+Plume Config is a lightweight configuration library made for Minecraft Mods, based on [Tom's Obvious Minimal Language `TOML`](https://toml.io).
 
 ## Implementation
 
@@ -14,70 +16,15 @@ Plume Config is a lightweight configuration library made for Minecraft Mods, usi
 
 ```groovy
 repositories {
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
+    maven { url = "https://api.modrinth.com/maven" }
 }
 
 dependencies {
-    /* Plume Config v3.2.1 */
-    modApi include("maven.modrinth:plumeconfig:4uCYxiEc")
-    
-    /* Tomlj 1.1.0 for mod local runtime */
-    modLocalRuntime("org.tomlj:tomlj:1.1.0")
+    modImplementation include("maven.modrinth:plumeconfig:xxx")
 }
 ```
 
-### Explanation
-
-Plume Config is simply using [Modrinth Maven](https://docs.modrinth.com/docs/tutorials/maven/), so you can add the followings to your `build.gradle` file:
-
-`1. Add Modrinth Maven repository`
-
-```groovy
-repositories {
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
-}
-```
-
-`Modrinth's Way`
-
-```groovy
-repositories {
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
-            }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
-}
-```
-
-`2. Add Plume Config dependency`
-
-```groovy
-dependencies {
-    /* Plume Config v3.2.1 */
-    modApi include("maven.modrinth:plumeconfig:4uCYxiEc")
-}
-```
-
-> _**Important Notice**_
-> 
-> 1. Please use modApi instead of something else.
-> 
-> 2. Versions lower than v3.2.0 are outdated, and versions that are not the latest are not recommended.
-> 
-> 3. You are supposed to use the version identifier instead of the version number, please check them at [Modrinth Versions](https://modrinth.com/mod/plumeconfig/versions).
-> 
-> 4. Due to some *gradle* problems, only include Plume Config can cause crash at local runtime, but jar files are actually runnable. Just add `modLocalRuntime("org.tomlj:tomlj:1.1.0")` if you want to debug your mod at local runtime. See [TL;DR](#tldr) for the final gradle content.
+> Remember to replace `xxx` above to the latest `version id` of Plume Config(starts with `v`). You can check the versions on [Modrinth,](https://modrinth.com/mod/plumeconfig/versions) or just copy the latest release tag on [GitHub,](https://github.com/KrLite/Plume-Config/tags) they are the same.
 
 ## Demonstration
 
