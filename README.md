@@ -1,3 +1,5 @@
+# _This README Needs a Rewrite._
+
 ![Banner](artwork/banner.png)
 
 # Plume Config [`based on TOML`](https://toml.io)
