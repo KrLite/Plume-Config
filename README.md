@@ -2,7 +2,7 @@
 
 ![Banner](artwork/banner.png)
 
-### <p align=right>[Modrinth →](https://modrinth.com/mod/plumeconfig)<br /><sub>[Based on `TOML`](https://toml.io)&ensp;&emsp;</sub></p>
+### <p align=right>[Modrinth →](https://modrinth.com/mod/plumeconfig)<br />[Based on `TOML`](https://toml.io)&emsp;</p>
 
 # Plume Config
 
