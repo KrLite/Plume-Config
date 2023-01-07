@@ -1,4 +1,4 @@
-# _This README Needs a Rewrite._
+# Plume Config is Deprecated. Consider Using [Pierced](https://github.com/KrLite/Pierced) Instead.
 
 ![Banner](artwork/banner.png)
 
